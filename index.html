@@ -843,8 +843,8 @@
 (async () => {
   // ─── Constants ───────────────────────────────────
   const PX_PER_FRAME   = 28;   // pixels of scroll per frame (slower = more cinematic)
-  const PRELOAD_STEP   = 5;    // load every Nth frame first (fast preview), then fill gaps
-  const FRAME_PATH     = i => `frames/frame_${String(i).padStart(4,'0')}.jpg`;
+  const PRELOAD_STEP   = 4;    // load every Nth frame first (fast preview), then fill gaps
+  const FRAME_PATH     = i => `frames/frame_${String(i).padStart(4,'0')}.webp`;
 
   const bgCanvas = document.getElementById('bg-canvas');
   const bgCtx    = bgCanvas.getContext('2d', { alpha: false });
