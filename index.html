@@ -60,221 +60,226 @@
     .nav-links a:hover { color:var(--gold); }
 
     /* ══════════════════════════════════════════
-       SCROLL ANIMATION HERO
-       ══════════════════════════════════════════ */
+   SPLIT-SCREEN SCROLL HERO (Obsidian style)
+   ══════════════════════════════════════════ */
 
-    #scroll-hero {
-      /* Height is set by JS once frame count is known */
-      position: relative;
-    }
+#scroll-hero {
+  background: #080306;
+  position: relative;
+}
 
-    #scroll-sticky {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: hidden;
-      background: #0a0408; /* fallback bg while loading */
-    }
+/* Grid: text col left 42%, canvas col right 58% */
+#split-wrap {
+  display: grid;
+  grid-template-columns: 42% 58%;
+  direction: ltr;          /* predictable regardless of RTL */
+  align-items: start;
+}
 
-    /* BG canvas — blurred cover version fills the sides around portrait video */
-    #bg-canvas {
-      position: absolute;
-      inset: -60px;
-      width: calc(100% + 120px);
-      height: calc(100% + 120px);
-      display: block;
-      filter: blur(38px) brightness(0.3) saturate(1.5);
-    }
+/* ── TEXT COLUMN (left, scrolls naturally) ── */
+#text-col {
+  direction: rtl;
+  z-index: 2;
+}
 
-    /* Main canvas — sharp contain-fit, full portrait video visible */
-    #anim-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+.chapter {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7rem 3rem 7rem 2rem;
+  text-align: right;
+  border-left: 1px solid rgba(201,164,98,.07);
+  position: relative;
+}
+.chapter + .chapter::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to left, rgba(201,164,98,.12), transparent);
+}
 
-    /* Cinematic wipe overlay — fades in at end of scroll animation */
-    #anim-transition {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, #0a0408 0%, #2A0A12 100%);
-      opacity: 0;
-      pointer-events: none;
-    }
+.ch-num {
+  font-family: 'Assistant', sans-serif;
+  font-size: .65rem; font-weight: 400; letter-spacing: .28em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 2rem;
+  display: flex; align-items: center; gap: .7rem; justify-content: flex-end;
+}
+.ch-num-line {
+  display: inline-block; width: 28px; height: 1px;
+  background: var(--gold); flex-shrink: 0;
+}
 
-    /* Dark gradient overlays on top of canvas */
-    .canvas-vignette {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(to bottom,
-          rgba(10,4,8,.6) 0%,
-          rgba(10,4,8,.1) 18%,
-          transparent 35%,
-          transparent 65%,
-          rgba(10,4,8,.15) 82%,
-          rgba(10,4,8,.75) 100%
-        ),
-        linear-gradient(to right,
-          rgba(10,4,8,.35) 0%,
-          transparent 15%,
-          transparent 85%,
-          rgba(10,4,8,.35) 100%
-        );
-    }
+.ch-title {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: clamp(2.8rem, 5vw, 5.5rem);
+  font-weight: 900; line-height: .95;
+  color: #ffffff; letter-spacing: -.02em;
+  margin-bottom: 1.6rem;
+}
+.ch-title span { color: var(--gold); display: block; }
 
-    /* ── TEXT OVERLAYS ── */
-    .anim-phase {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-      pointer-events: none;
-      transition: opacity .5s ease;
-    }
-    #phase-1 { pointer-events: all; }
-    #phase-3 { pointer-events: all; }
+.ch-body {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem; font-weight: 300; line-height: 1.85;
+  color: rgba(232,213,163,.55); margin-bottom: 2.5rem;
+  max-width: 340px; margin-right: 0; margin-left: auto;
+}
 
-    .hero-eye {
-      font-family:'Assistant',sans-serif;
-      font-size:.72rem; font-weight:600; letter-spacing:.26em;
-      text-transform:uppercase; color:var(--gold);
-      margin-bottom:1.2rem;
-      text-shadow:0 1px 12px rgba(0,0,0,.9), 0 0 30px rgba(0,0,0,.8);
-      background:rgba(0,0,0,.25); padding:.3rem 1rem; display:inline-block;
-      backdrop-filter:blur(4px);
-    }
-    .hero-title {
-      font-family:'Frank Ruhl Libre',serif;
-      font-size:clamp(4.5rem,13vw,11rem); font-weight:900;
-      color:#ffffff; letter-spacing:-.01em; line-height:.9;
-      margin-bottom:1.4rem;
-      text-shadow:
-        0 2px 0 rgba(0,0,0,.9),
-        0 4px 20px rgba(0,0,0,.85),
-        0 8px 60px rgba(0,0,0,.7);
-    }
-    .hero-sub {
-      font-family:'Frank Ruhl Libre',serif; font-weight:500;
-      font-size:clamp(1.1rem,2.4vw,1.75rem);
-      color:#ffffff; margin-bottom:3rem;
-      text-shadow:0 2px 12px rgba(0,0,0,.95), 0 0 40px rgba(0,0,0,.8);
-      background:rgba(0,0,0,.2); padding:.4rem 1.2rem; display:inline-block;
-      backdrop-filter:blur(4px);
-    }
+/* ── CANVAS COLUMN (right, sticky) ── */
+#canvas-col {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #080306;
+}
 
-    /* Phase 3 – appears near end of animation */
-    .mid-title {
-      font-family:'Frank Ruhl Libre',serif;
-      font-size:clamp(2rem,5vw,4rem); font-weight:700;
-      color:var(--cream); line-height:1.2; margin-bottom:1rem;
-    }
-    .mid-sub {
-      font-family:'Assistant',sans-serif; font-weight:300;
-      font-size:1.05rem; color:rgba(232,213,163,.75); margin-bottom:2.5rem;
-    }
+/* Blurred background canvas (fills black bars for portrait video) */
+#bg-canvas {
+  position: absolute;
+  inset: -60px;
+  width: calc(100% + 120px);
+  height: calc(100% + 120px);
+  display: block;
+  filter: blur(38px) brightness(0.3) saturate(1.5);
+}
 
-    /* Scroll hint */
-    .scroll-hint {
-      position:absolute; bottom:2.5rem; left:50%; transform:translateX(-50%);
-      display:flex; flex-direction:column; align-items:center; gap:.5rem;
-      transition:opacity .4s;
-    }
-    .scroll-hint span {
-      font-size:.6rem; letter-spacing:.24em; color:rgba(232,213,163,.5);
-    }
-    .scroll-hint-line {
-      width:1px; height:48px;
-      background:linear-gradient(to bottom,rgba(201,164,98,.5),transparent);
-      animation:pulseDown 2.2s ease-in-out infinite;
-    }
-    @keyframes pulseDown {
-      0%,100%{opacity:.3;transform:scaleY(.4) translateY(-20px);transform-origin:top}
-      50%    {opacity:1; transform:scaleY(1)  translateY(0);   transform-origin:top}
-    }
+/* Sharp main canvas */
+#anim-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 
-    /* ── PROGRESS BAR ── */
-    #scroll-progress {
-      position:absolute; bottom:0; left:0; right:0; height:2px;
-      background:rgba(201,164,98,.15);
-      pointer-events:none;
-    }
-    #scroll-progress-fill {
-      height:100%; width:0%;
-      background:linear-gradient(to left, var(--gold), rgba(201,164,98,.4));
-      transition:width .05s linear;
-    }
+/* Cinematic wipe at end */
+#anim-transition {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, #080306 0%, #2A0A12 100%);
+  opacity: 0; pointer-events: none;
+}
 
-    /* ── LOADING SCREEN ── */
-    #loader {
-      position:absolute; inset:0; z-index:100;
-      background:var(--burg-deep);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:1.5rem;
-      transition:opacity 1s ease, visibility 1s;
-    }
-    #loader.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+/* Subtle vignette on the canvas side */
+.canvas-vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(8,3,6,.7) 0%, transparent 15%, transparent 82%, rgba(8,3,6,.7) 100%),
+    linear-gradient(to right, rgba(8,3,6,.5) 0%, transparent 20%);
+}
 
-    .loader-logo {
-      font-family:'Frank Ruhl Libre',serif; font-size:1.6rem; font-weight:700;
-      letter-spacing:.22em; color:var(--gold-light);
-      animation: fadeIn .8s both;
-    }
+/* ── PROGRESS BAR ── */
+#scroll-progress {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: rgba(201,164,98,.1); pointer-events: none;
+}
+#scroll-progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(to right, var(--gold), rgba(201,164,98,.4));
+  transition: width .05s linear;
+}
 
-    /* Macaron SVG loader */
-    .loader-macaron-wrap {
-      position:relative; width:110px; height:110px;
-      animation: floatLoader 3s ease-in-out infinite;
-    }
-    @keyframes floatLoader {
-      0%,100%{transform:translateY(0)}
-      50%{transform:translateY(-10px)}
-    }
-    .loader-macaron-wrap svg { width:100%; height:100%; }
+/* ── LOADING SCREEN ── */
+#loader {
+  position: absolute; inset: 0; z-index: 100;
+  background: #080306;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1.5rem;
+  transition: opacity 1s ease, visibility 1s;
+}
+#loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-    /* Percentage ring */
-    .loader-ring-track { fill:none; stroke:rgba(201,164,98,.12); stroke-width:3; }
-    .loader-ring-fill  {
-      fill:none; stroke:var(--gold); stroke-width:3;
-      stroke-linecap:round;
-      stroke-dasharray:289;
-      stroke-dashoffset:289;
-      transform:rotate(-90deg); transform-origin:50% 50%;
-      transition:stroke-dashoffset .15s linear;
-    }
+.loader-logo {
+  font-family: 'Frank Ruhl Libre', serif; font-size: 1.6rem; font-weight: 700;
+  letter-spacing: .22em; color: var(--gold-light);
+  animation: fadeIn .8s both;
+}
 
-    .loader-pct {
-      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-      font-family:'Frank Ruhl Libre',serif; font-size:1.3rem; font-weight:700;
-      color:var(--gold);
-    }
+.loader-macaron-wrap {
+  position: relative; width: 110px; height: 110px;
+  animation: floatLoader 3s ease-in-out infinite;
+}
+@keyframes floatLoader {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.loader-macaron-wrap svg { width: 100%; height: 100%; }
+.loader-ring-track { fill: none; stroke: rgba(201,164,98,.12); stroke-width: 3; }
+.loader-ring-fill {
+  fill: none; stroke: var(--gold); stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 289; stroke-dashoffset: 289;
+  transform: rotate(-90deg); transform-origin: 50% 50%;
+  transition: stroke-dashoffset .15s linear;
+}
+.loader-pct {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: 'Frank Ruhl Libre', serif; font-size: 1.3rem; font-weight: 700;
+  color: var(--gold);
+}
+.loader-text {
+  font-size: .6rem; letter-spacing: .28em; color: rgba(201,164,98,.4);
+  text-transform: uppercase;
+}
 
-    .loader-text {
-      font-size:.6rem; letter-spacing:.28em; color:rgba(201,164,98,.4);
-      text-transform:uppercase;
-    }
+/* Scroll hint in first chapter */
+.scroll-hint {
+  display: flex; flex-direction: column; align-items: center; gap: .5rem;
+  margin-top: 2.5rem; align-self: flex-end;
+}
+.scroll-hint span {
+  font-size: .58rem; letter-spacing: .22em; color: rgba(232,213,163,.35);
+}
+.scroll-hint-line {
+  width: 1px; height: 44px;
+  background: linear-gradient(to bottom, rgba(201,164,98,.4), transparent);
+  animation: pulseDown 2.2s ease-in-out infinite;
+}
+@keyframes pulseDown {
+  0%,100% { opacity: .3; transform: scaleY(.4) translateY(-20px); transform-origin: top; }
+  50% { opacity: 1; transform: scaleY(1) translateY(0); transform-origin: top; }
+}
 
-    /* ── VIDEO FALLBACK (shown if frames not available) ── */
-    #video-hero {
-      display:none; /* shown by JS if frames/count.json is missing */
-      position:relative; height:100vh; min-height:680px;
-      align-items:center; justify-content:center; overflow:hidden;
-    }
-    #hero-video {
-      position:absolute; inset:0; width:100%; height:100%;
-      object-fit:cover;
-    }
-    .hero-overlay-v {
-      position:absolute; inset:0;
-      background:linear-gradient(160deg,rgba(42,10,18,.6) 0%,rgba(42,10,18,.3) 45%,rgba(42,10,18,.65) 100%);
-    }
+/* ── VIDEO FALLBACK ── */
+#video-hero {
+  display: none;
+  position: relative; height: 100vh;
+  align-items: center; justify-content: center; overflow: hidden;
+}
+#hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-overlay-v {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg,rgba(42,10,18,.6) 0%,rgba(42,10,18,.3) 45%,rgba(42,10,18,.65) 100%);
+}
+.hero-fallback-content {
+  position: relative; z-index: 1; text-align: center;
+}
+.hero-fallback-content .ch-title { font-size: clamp(4rem,12vw,9rem); }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  #split-wrap {
+    grid-template-columns: 1fr;
+    direction: rtl;
+  }
+  #canvas-col {
+    position: relative;
+    height: 60vh;
+    order: -1;
+  }
+  #text-col { direction: rtl; }
+  .chapter {
+    min-height: auto;
+    padding: 4rem 1.5rem;
+    border-left: none;
+    border-top: 1px solid rgba(201,164,98,.07);
+  }
+  .ch-title { font-size: clamp(2.2rem, 9vw, 3.5rem); }
+  .ch-body { max-width: 100%; }
+}
 
     /* ── BUTTONS ── */
     .btn-outline {
@@ -635,104 +640,102 @@
   <a href="#cta"          class="mob-link">הזמנה</a>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     SCROLL ANIMATION HERO (Canvas — Apple style)
-     Falls back to video if frames/ not extracted yet
-     ══════════════════════════════════════════════════ -->
-
-<!-- Canvas hero (shown when frames exist) -->
+<!-- ══ SCROLL ANIMATION HERO (split screen) ══ -->
 <div id="scroll-hero">
-  <div id="scroll-sticky">
+  <div id="split-wrap">
 
-    <!-- Loading screen -->
-    <div id="loader">
-      <p class="loader-logo">MAY CAKE</p>
+    <!-- TEXT COLUMN (left, scrolls) -->
+    <div id="text-col">
 
-      <!-- Macaron with circular progress ring -->
-      <div class="loader-macaron-wrap">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <!-- Ring track -->
-          <circle cx="50" cy="50" r="46" class="loader-ring-track"/>
-          <!-- Ring fill -->
-          <circle cx="50" cy="50" r="46" class="loader-ring-fill" id="loader-ring-fill"/>
-
-          <!-- Macaron shape (side view, centered) -->
-          <!-- Top dome -->
-          <ellipse cx="50" cy="38" rx="22" ry="13" fill="rgba(201,164,98,0.15)" stroke="rgba(201,164,98,0.35)" stroke-width="1"/>
-          <!-- Cream filling -->
-          <rect x="28" y="49" width="44" height="7" rx="2" fill="rgba(232,213,163,0.2)" stroke="rgba(201,164,98,0.35)" stroke-width="1"/>
-          <!-- Bottom dome -->
-          <ellipse cx="50" cy="62" rx="22" ry="13" fill="rgba(201,164,98,0.15)" stroke="rgba(201,164,98,0.35)" stroke-width="1"/>
-
-          <!-- Filled version (clipped) -->
-          <defs>
-            <clipPath id="mac-fill">
-              <rect id="mac-fill-rect" x="0" y="100" width="100" height="0"/>
-            </clipPath>
-          </defs>
-          <ellipse cx="50" cy="38" rx="22" ry="13" fill="rgba(201,164,98,0.75)" clip-path="url(#mac-fill)"/>
-          <rect x="28" y="49" width="44" height="7" rx="2" fill="rgba(232,213,163,0.9)" clip-path="url(#mac-fill)"/>
-          <ellipse cx="50" cy="62" rx="22" ry="13" fill="rgba(201,164,98,0.75)" clip-path="url(#mac-fill)"/>
-        </svg>
-        <div class="loader-pct" id="loader-pct">0%</div>
+      <!-- Chapter 0: Brand intro -->
+      <div class="chapter" id="ch-0">
+        <p class="ch-num"><span class="ch-num-line"></span>001 / הסיפור שלנו</p>
+        <h1 class="ch-title">MAY<span>CAKE</span></h1>
+        <p class="ch-body">מאפייה יוקרתית שנולדה מתוך אהבה לאומנות הקונדיטוריה. כל יצירה — חוויה בלתי נשכחת.</p>
+        <a href="#cta" class="btn-outline" style="align-self:flex-end">להזמנה</a>
+        <div class="scroll-hint" id="scroll-hint">
+          <span>גלול</span>
+          <div class="scroll-hint-line"></div>
+        </div>
       </div>
 
-      <p class="loader-text" id="loader-text">מכין את החוויה...</p>
-    </div>
-
-    <!-- BG canvas: blurred cover-fit (fills portrait side bars) -->
-    <canvas id="bg-canvas"></canvas>
-    <!-- Main canvas: sharp contain-fit (full video visible) -->
-    <canvas id="anim-canvas"></canvas>
-    <!-- Cinematic fade-to-dark at end of animation -->
-    <div id="anim-transition"></div>
-
-    <!-- Gradient vignette on top of canvas -->
-    <div class="canvas-vignette"></div>
-
-    <!-- Phase 1: Entry text (fades out as you scroll) -->
-    <div class="anim-phase" id="phase-1">
-      <p class="hero-eye">מאפייה יוקרתית — עבודת יד</p>
-      <h1 class="hero-title">MAY CAKE</h1>
-      <p class="hero-sub">כל ביס הוא חוויה</p>
-      <a href="#cta" class="btn-outline">להזמנה</a>
-
-      <!-- Scroll hint -->
-      <div class="scroll-hint" id="scroll-hint">
-        <span>גלול</span>
-        <div class="scroll-hint-line"></div>
+      <!-- Chapter 1: Handmade -->
+      <div class="chapter" id="ch-1">
+        <p class="ch-num"><span class="ch-num-line"></span>002 / עבודת יד</p>
+        <h2 class="ch-title">מיוצר<span>ביד</span></h2>
+        <p class="ch-body">כל שכבה, כל קישוט, כל פרט — נוצרים בידיים. אנחנו לא מאמינים בקיצורי דרך. רק אמנות אמיתית.</p>
       </div>
-    </div>
 
-    <!-- Phase 2: Mid-scroll — clean, text-free (handled by opacity of phases) -->
+      <!-- Chapter 2: Premium -->
+      <div class="chapter" id="ch-2">
+        <p class="ch-num"><span class="ch-num-line"></span>003 / חומרי גלם</p>
+        <h2 class="ch-title">פרמיום<span>בלבד</span></h2>
+        <p class="ch-body">שוקולד בלגי, וניל אפריקאי, פירות טריים. אנחנו בוחרים את הטוב ביותר בעולם כדי שתקבלו את השלמות.</p>
+      </div>
 
-    <!-- Phase 3: End text (fades in near end of animation) -->
-    <div class="anim-phase" id="phase-3" style="opacity:0">
-      <p class="hero-eye">טעמו את השלמות</p>
-      <h2 class="mid-title">יצירות שמרגישים<br>בכל ביס</h2>
-      <p class="mid-sub">חומרי גלם פרמיום · עיצוב ייחודי · בלתי נשכח</p>
-      <a href="#cta" class="btn-outline">הזמינו עוגה</a>
-    </div>
+      <!-- Chapter 3: CTA -->
+      <div class="chapter" id="ch-3">
+        <p class="ch-num"><span class="ch-num-line"></span>004 / החוויה</p>
+        <h2 class="ch-title">טעמו<span>שלמות</span></h2>
+        <p class="ch-body">מוכנים לחוויה בלתי נשכחת? כל עוגה מותאמת אישית לפי החזון שלכם.</p>
+        <a href="#cta" class="btn-outline" style="align-self:flex-end">הזמינו עכשיו</a>
+      </div>
 
-    <!-- Scroll progress line at bottom -->
-    <div id="scroll-progress">
-      <div id="scroll-progress-fill"></div>
-    </div>
+    </div><!-- /text-col -->
 
-  </div>
-</div>
+    <!-- CANVAS COLUMN (right, sticky) -->
+    <div id="canvas-col">
 
-<!-- Video fallback (shown if frames not found) -->
+      <!-- Loading screen -->
+      <div id="loader">
+        <p class="loader-logo">MAY CAKE</p>
+        <div class="loader-macaron-wrap">
+          <svg viewBox="0 0 100 100">
+            <!-- Macaron shape -->
+            <ellipse cx="50" cy="38" rx="32" ry="18" fill="#C9A462" opacity=".9"/>
+            <ellipse cx="50" cy="38" rx="28" ry="14" fill="#E8D5A3" opacity=".7"/>
+            <rect x="18" y="47" width="64" height="8" rx="4" fill="#5C1A28" opacity=".6"/>
+            <ellipse cx="50" cy="62" rx="32" ry="18" fill="#C9A462" opacity=".9"/>
+            <ellipse cx="50" cy="62" rx="28" ry="14" fill="#E8D5A3" opacity=".7"/>
+            <!-- Ring progress -->
+            <circle cx="50" cy="50" r="46" class="loader-ring-track"/>
+            <circle cx="50" cy="50" r="46" class="loader-ring-fill" id="ring-fill"/>
+          </svg>
+          <div class="loader-pct" id="loader-pct">0%</div>
+        </div>
+        <p class="loader-text">טוען חוויה</p>
+      </div>
+
+      <!-- Blurred background (fills portrait video edges) -->
+      <canvas id="bg-canvas"></canvas>
+
+      <!-- Sharp main canvas -->
+      <canvas id="anim-canvas"></canvas>
+
+      <!-- Cinematic transition overlay -->
+      <div id="anim-transition"></div>
+
+      <!-- Vignette -->
+      <div class="canvas-vignette"></div>
+
+      <!-- Progress line -->
+      <div id="scroll-progress"><div id="scroll-progress-fill"></div></div>
+
+    </div><!-- /canvas-col -->
+
+  </div><!-- /split-wrap -->
+</div><!-- /scroll-hero -->
+
+<!-- Video fallback -->
 <div id="video-hero">
   <video id="hero-video" autoplay muted loop playsinline>
     <source src="fd6a5e7df2f14dbf8cf0b4d57e428440_1774187612 (1).mp4" type="video/mp4" />
   </video>
   <div class="hero-overlay-v"></div>
-  <div class="anim-phase">
-    <p class="hero-eye">מאפייה יוקרתית — עבודת יד</p>
-    <h1 class="hero-title">MAY CAKE</h1>
-    <p class="hero-sub">כל ביס הוא חוויה</p>
-    <a href="#cta" class="btn-outline" style="animation:riseIn 1.2s .9s both">להזמנה</a>
+  <div class="hero-fallback-content">
+    <p class="ch-num" style="justify-content:center;color:var(--gold)">מאפייה יוקרתית</p>
+    <h1 class="ch-title" style="text-align:center">MAY<span>CAKE</span></h1>
+    <div style="text-align:center;margin-top:2rem"><a href="#cta" class="btn-outline">להזמנה</a></div>
   </div>
 </div>
 
@@ -931,70 +934,58 @@
      ══════════════════════════════════════════════════ -->
 <script>
 (async () => {
-  // ─── Constants ───────────────────────────────────
-  const PX_PER_FRAME   = 28;   // pixels of scroll per frame (slower = more cinematic)
-  const PRELOAD_STEP   = 4;    // load every Nth frame first (fast preview), then fill gaps
-  const FRAME_PATH     = i => `frames/frame_${String(i).padStart(4,'0')}.webp`;
+  const PRELOAD_STEP = 4;
+  const FRAME_PATH   = i => `frames/frame_${String(i).padStart(4,'0')}.webp`;
 
-  const bgCanvas = document.getElementById('bg-canvas');
-  const bgCtx    = bgCanvas.getContext('2d', { alpha: false });
-  const canvas   = document.getElementById('anim-canvas');
-  const ctx      = canvas.getContext('2d', { alpha: true }); // transparent so bg shows through
-  const animTrans= document.getElementById('anim-transition');
-  const hero     = document.getElementById('scroll-hero');
-  const loader   = document.getElementById('loader');
-  const loaderBar= document.getElementById('loader-bar');
-  const loaderTxt= document.getElementById('loader-text');
-  const phase1   = document.getElementById('phase-1');
-  const phase3   = document.getElementById('phase-3');
-  const hint     = document.getElementById('scroll-hint');
-  const progFill = document.getElementById('scroll-progress-fill');
+  const hero       = document.getElementById('scroll-hero');
+  const loader     = document.getElementById('loader');
+  const ringFill   = document.getElementById('ring-fill');
+  const loaderPct  = document.getElementById('loader-pct');
+  const progFill   = document.getElementById('scroll-progress-fill');
+  const hint       = document.getElementById('scroll-hint');
+  const transition = document.getElementById('anim-transition');
 
-  let frames = [];
-  let totalFrames = 0;
-  let currentFrameIdx = 0;
-  let rafPending = false;
+  const bgCanvas   = document.getElementById('bg-canvas');
+  const bgCtx      = bgCanvas.getContext('2d', { alpha: false });
+  const canvas     = document.getElementById('anim-canvas');
+  const ctx        = canvas.getContext('2d', { alpha: false });
 
-  // ─── Resize both canvases to fill viewport ──────
-  function resizeCanvas() {
-    canvas.width   = window.innerWidth;
-    canvas.height  = window.innerHeight;
-    bgCanvas.width = window.innerWidth  + 120;
-    bgCanvas.height= window.innerHeight + 120;
+  let frames = [], totalFrames = 0, currentFrameIdx = 0, rafPending = false;
+
+  function resizeCanvases() {
+    const col   = document.getElementById('canvas-col');
+    const w     = col.offsetWidth;
+    const h     = window.innerHeight;
+    canvas.width   = bgCanvas.width   = w;
+    canvas.height  = bgCanvas.height  = h;
     if (frames[currentFrameIdx]?.complete) renderFrame(currentFrameIdx);
   }
-  window.addEventListener('resize', resizeCanvas, { passive: true });
+  window.addEventListener('resize', resizeCanvases, { passive: true });
 
-  // ─── Draw a frame ─────────────────────────────
-  // bgCanvas: cover-fit  (fills space around portrait video, blurred via CSS)
-  // canvas:   contain-fit (full video always visible, no cropping)
+  function drawCover(c, img) {
+    const cw = c.width, ch = c.height;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const scale = Math.max(cw / iw, ch / ih);
+    c.drawImage(img, (cw - iw * scale) / 2, (ch - ih * scale) / 2, iw * scale, ih * scale);
+  }
+
+  function drawContain(c, img) {
+    const cw = c.width, ch = c.height;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const scale = Math.min(cw / iw, ch / ih);
+    c.drawImage(img, (cw - iw * scale) / 2, (ch - ih * scale) / 2, iw * scale, ih * scale);
+  }
+
   function renderFrame(idx) {
     const img = frames[idx];
     if (!img?.complete || !img.naturalWidth) return;
-
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-
-    // — BG canvas: cover-fit (oversized to hide blur edge artifacts) —
-    const bw = bgCanvas.width, bh = bgCanvas.height;
-    const bgScale = Math.max(bw / iw, bh / ih);
-    bgCtx.drawImage(img,
-      (bw - iw * bgScale) / 2,
-      (bh - ih * bgScale) / 2,
-      iw * bgScale, ih * bgScale
-    );
-
-    // — Main canvas: contain-fit (full video, no crop) —
-    const cw = canvas.width, ch = canvas.height;
-    const scale = Math.min(cw / iw, ch / ih);
-    const drawW = iw * scale, drawH = ih * scale;
-    const drawX = (cw - drawW) / 2, drawY = (ch - drawH) / 2;
-
-    // Clear transparent area first so bg canvas shows through edges
-    ctx.clearRect(0, 0, cw, ch);
-    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    // Blurred bg (cover-fit)
+    bgCtx.drawImage(img, 0, 0, bgCanvas.width, bgCanvas.height);
+    // Sharp main (contain-fit — shows full portrait)
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawContain(ctx, img);
   }
 
-  // ─── Scroll handler ──────────────────────────────
   function onScroll() {
     if (rafPending) return;
     rafPending = true;
@@ -1003,60 +994,39 @@
 
   function tick() {
     rafPending = false;
+    const scrollY     = window.scrollY;
+    const heroTop     = hero.offsetTop;
+    const scrollable  = hero.offsetHeight - window.innerHeight;
+    const progress    = Math.max(0, Math.min(1, (scrollY - heroTop) / scrollable));
+    const frameIdx    = Math.min(totalFrames - 1, Math.round(progress * (totalFrames - 1)));
 
-    const scrollY      = window.scrollY;
-    const heroTop      = hero.offsetTop;
-    const heroScrollH  = hero.offsetHeight - window.innerHeight;
-    const rawProgress  = (scrollY - heroTop) / heroScrollH;
-    const progress     = Math.max(0, Math.min(1, rawProgress));
-    const frameIdx     = Math.min(totalFrames - 1, Math.round(progress * (totalFrames - 1)));
-
-    // Render if frame changed and is loaded
-    if (frameIdx !== currentFrameIdx || progress === 0) {
+    if (frameIdx !== currentFrameIdx) {
       currentFrameIdx = frameIdx;
-      if (frames[frameIdx]?.complete) renderFrame(frameIdx);
+      const f = frames[frameIdx];
+      if (f?.complete) renderFrame(frameIdx);
       else {
-        // find nearest loaded frame
-        let nearest = frameIdx;
         for (let d = 1; d < totalFrames; d++) {
-          if (frameIdx - d >= 0 && frames[frameIdx - d]?.complete) { nearest = frameIdx - d; break; }
-          if (frameIdx + d < totalFrames && frames[frameIdx + d]?.complete) { nearest = frameIdx + d; break; }
+          const prev = frameIdx - d, next = frameIdx + d;
+          if (prev >= 0 && frames[prev]?.complete) { renderFrame(prev); break; }
+          if (next < totalFrames && frames[next]?.complete) { renderFrame(next); break; }
         }
-        renderFrame(nearest);
       }
     }
 
-    // Progress bar
     progFill.style.width = `${progress * 100}%`;
 
-    // ── Text phase transitions ──
-    // Phase 1 fades out from 0% → 15%
-    const p1 = progress < 0.1 ? 1 : Math.max(0, 1 - (progress - 0.1) / 0.07);
-    phase1.style.opacity       = p1;
-    phase1.style.pointerEvents = p1 > 0.1 ? 'all' : 'none';
+    // Scroll hint
+    if (hint) hint.style.opacity = progress < 0.04 ? 1 : Math.max(0, 1 - (progress - 0.04) / 0.05);
 
-    // Scroll hint fades fast
-    hint.style.opacity = progress < 0.04 ? 1 : Math.max(0, 1 - (progress - 0.04) / 0.05);
-
-    // Phase 3 fades in from 75% → 87%
-    const p3 = progress < 0.75 ? 0 : Math.min(1, (progress - 0.75) / 0.1);
-    phase3.style.opacity       = p3;
-    phase3.style.pointerEvents = p3 > 0.1 ? 'all' : 'none';
-
-    // ── Cinematic wipe: last 8% → fade to dark, then next section appears ──
-    const wipe = progress < 0.92 ? 0 : Math.min(1, (progress - 0.92) / 0.08);
-    animTrans.style.opacity = wipe;
+    // End cinematic transition
+    transition.style.opacity = progress > 0.9 ? (progress - 0.9) / 0.1 : 0;
   }
 
-  // ─── Smart preload ───────────────────────────────
-  // Phase A: load every Nth frame for quick preview
-  // Phase B: fill remaining frames in background
   function loadFrame(i) {
     return new Promise(resolve => {
-      if (frames[i]) { resolve(); return; }
+      if (frames[i]?.complete) { resolve(); return; }
       const img = new Image();
-      img.onload  = resolve;
-      img.onerror = resolve; // don't block on errors
+      img.onload = img.onerror = resolve;
       img.src = FRAME_PATH(i + 1);
       frames[i] = img;
     });
@@ -1064,112 +1034,73 @@
 
   async function preloadAll(count, onProgress) {
     frames = new Array(count).fill(null);
+    let done = 0;
 
-    // Phase A — sparse keyframes for instant start
+    // Phase A: sparse keyframes
     const sparse = [];
     for (let i = 0; i < count; i += PRELOAD_STEP) sparse.push(i);
-    // always include frame 0
     if (!sparse.includes(0)) sparse.unshift(0);
-
-    let done = 0;
-    const total = count;
 
     await Promise.all(sparse.map(i => loadFrame(i).then(() => {
       done++;
-      onProgress(done / total);
+      onProgress(done / count);
+      if (done === sparse.length) renderFrame(0);
     })));
 
-    // Render first frame immediately after sparse load
-    renderFrame(0);
-
-    // Phase B — fill remaining frames concurrently
-    const remaining = [];
-    for (let i = 0; i < count; i++) {
-      if (!frames[i]) remaining.push(i);
-    }
-
-    // Load in small batches to stay responsive
+    // Phase B: fill remaining
+    const rest = [];
+    for (let i = 0; i < count; i++) if (!frames[i]) rest.push(i);
     const BATCH = 8;
-    for (let b = 0; b < remaining.length; b += BATCH) {
-      await Promise.all(
-        remaining.slice(b, b + BATCH).map(i => loadFrame(i).then(() => {
-          done++;
-          onProgress(done / total);
-        }))
-      );
+    for (let b = 0; b < rest.length; b += BATCH) {
+      await Promise.all(rest.slice(b, b + BATCH).map(i => loadFrame(i).then(() => {
+        done++;
+        onProgress(done / count);
+      })));
     }
   }
 
-  // ─── Main init ───────────────────────────────────
   try {
     const res = await fetch('frames/count.json');
     if (!res.ok) throw new Error('no frames');
     const { count } = await res.json();
-
     if (!count || count < 2) throw new Error('too few frames');
     totalFrames = count;
 
-    // Set section height: enough scroll for all frames
-    hero.style.height = `calc(100vh + ${count * PX_PER_FRAME}px)`;
-
-    resizeCanvas();
+    resizeCanvases();
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    // Preload with progress
-    const ringCirc = 289; // 2π×46
-    const ringEl   = document.getElementById('loader-ring-fill');
-    const pctEl    = document.getElementById('loader-pct');
-    const fillRect = document.getElementById('mac-fill-rect');
-
-    await preloadAll(count, progress => {
-      const pct = Math.round(progress * 100);
-      // Ring
-      if (ringEl) ringEl.style.strokeDashoffset = ringCirc * (1 - progress);
-      // Percentage text
-      if (pctEl) pctEl.textContent = pct + '%';
-      // Macaron fill (from y=75 up to y=25 — fills top to bottom inverted)
-      if (fillRect) {
-        const fillH = progress * 50; // 0–50px
-        const fillY = 75 - fillH;
-        fillRect.setAttribute('y', fillY);
-        fillRect.setAttribute('height', fillH);
-      }
-      if (loaderTxt) loaderTxt.textContent = pct < 100 ? 'מכין את החוויה...' : 'מוכן!';
+    await preloadAll(count, pct => {
+      const offset = 289 - 289 * pct;
+      if (ringFill) ringFill.style.strokeDashoffset = offset;
+      if (loaderPct) loaderPct.textContent = Math.round(pct * 100) + '%';
     });
 
-    // Hide loader with fade
     loader.classList.add('hidden');
-
-    // Initial render
     renderFrame(0);
 
   } catch {
-    // ── Fallback: show video hero ──
     document.getElementById('scroll-hero').style.display = 'none';
     const vh = document.getElementById('video-hero');
     vh.style.display = 'flex';
-    loader.classList.add('hidden');
-    console.info('MAY CAKE: frames not found — showing video. Run: node extract-frames.mjs');
+    if (loader) loader.classList.add('hidden');
   }
 })();
 
-// ─── Nav scroll ──────────────────────────────────
+// Nav scroll
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 60);
 }, { passive: true });
 
-// ─── Scroll reveal for sections ──────────────────
+// Scroll reveal
 const revealEls = document.querySelectorAll('.reveal');
 const io = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); }
-  });
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); } });
 }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 revealEls.forEach(el => io.observe(el));
 
-// ─── Parallax: signature bg text ─────────────────
-const sigBg = document.getElementById('sigBg');
+// Parallax: signature bg text
+const sigBg  = document.getElementById('sigBg');
 const sigSec = document.getElementById('signature');
 if (sigBg && sigSec) {
   window.addEventListener('scroll', () => {
@@ -1179,46 +1110,23 @@ if (sigBg && sigSec) {
   }, { passive: true });
 }
 
-// ─── Floating particles in hero ──────────────────
-function spawnParticles() {
-  const sticky = document.getElementById('scroll-sticky');
-  if (!sticky) return;
-  for (let i = 0; i < 18; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 4 + 2;
-    p.style.cssText = `
-      width:${size}px; height:${size}px;
-      left:${Math.random()*100}%;
-      bottom:${Math.random()*30}%;
-      animation-duration:${4 + Math.random()*6}s;
-      animation-delay:${Math.random()*6}s;
-      opacity:0;
-    `;
-    sticky.appendChild(p);
-  }
-}
-spawnParticles();
-
-// ─── Mobile hamburger menu ────────────────────────
-const navToggle  = document.getElementById('nav-toggle');
+// Hamburger menu
+const toggle   = document.getElementById('nav-toggle');
 const mobileMenu = document.getElementById('mobile-menu');
-
-navToggle.addEventListener('click', () => {
-  const isOpen = mobileMenu.classList.toggle('open');
-  navToggle.classList.toggle('open', isOpen);
-  document.body.style.overflow = isOpen ? 'hidden' : '';
-});
-
-mobileMenu.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', () => {
-    mobileMenu.classList.remove('open');
-    navToggle.classList.remove('open');
-    document.body.style.overflow = '';
+if (toggle && mobileMenu) {
+  toggle.addEventListener('click', () => {
+    toggle.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
   });
-});
+  mobileMenu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      toggle.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
+}
 
-// ─── Smooth anchor scroll ─────────────────────────
+// Smooth anchor scroll
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     const t = document.querySelector(a.getAttribute('href'));
