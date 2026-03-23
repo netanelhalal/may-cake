@@ -59,227 +59,137 @@
     }
     .nav-links a:hover { color:var(--gold); }
 
-    /* ══════════════════════════════════════════
-   SPLIT-SCREEN SCROLL HERO (Obsidian style)
-   ══════════════════════════════════════════ */
+    /* ── SPLIT LAYOUT ── */
+    #site-wrap {
+      display: grid;
+      grid-template-columns: 50% 50%;
+      direction: ltr;
+      align-items: start;
+      min-height: 100vh;
+    }
 
-#scroll-hero {
-  background: #080306;
-  position: relative;
-}
+    /* LEFT column - all content */
+    #content-col {
+      direction: rtl;
+      background: #0a0408;
+    }
 
-/* Grid: text col left 42%, canvas col right 58% */
-#split-wrap {
-  display: grid;
-  grid-template-columns: 42% 58%;
-  direction: ltr;          /* predictable regardless of RTL */
-  align-items: start;
-}
+    /* RIGHT column - sticky canvas animation */
+    #photo-col {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: #0a0408;
+    }
 
-/* ── TEXT COLUMN (left, scrolls naturally) ── */
-#text-col {
-  direction: rtl;
-  z-index: 2;
-}
+    #anim-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
 
-.chapter {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 7rem 3rem 7rem 2rem;
-  text-align: right;
-  border-left: 1px solid rgba(201,164,98,.07);
-  position: relative;
-}
-.chapter + .chapter::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(to left, rgba(201,164,98,.12), transparent);
-}
+    #anim-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
 
-.ch-num {
-  font-family: 'Assistant', sans-serif;
-  font-size: .65rem; font-weight: 400; letter-spacing: .28em;
-  color: var(--gold); text-transform: uppercase;
-  margin-bottom: 2rem;
-  display: flex; align-items: center; gap: .7rem; justify-content: flex-end;
-}
-.ch-num-line {
-  display: inline-block; width: 28px; height: 1px;
-  background: var(--gold); flex-shrink: 0;
-}
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to left, transparent 60%, rgba(10,4,8,0.5) 100%),
+        linear-gradient(to bottom, rgba(10,4,8,0.25) 0%, transparent 25%, transparent 75%, rgba(10,4,8,0.5) 100%);
+      pointer-events: none;
+    }
 
-.ch-title {
-  font-family: 'Frank Ruhl Libre', serif;
-  font-size: clamp(2.8rem, 5vw, 5.5rem);
-  font-weight: 900; line-height: .95;
-  color: #ffffff; letter-spacing: -.02em;
-  margin-bottom: 1.6rem;
-}
-.ch-title span { color: var(--gold); display: block; }
+    .photo-brand {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      color: rgba(232,213,163,0.5);
+    }
 
-.ch-body {
-  font-family: 'Assistant', sans-serif;
-  font-size: 1rem; font-weight: 300; line-height: 1.85;
-  color: rgba(232,213,163,.55); margin-bottom: 2.5rem;
-  max-width: 340px; margin-right: 0; margin-left: auto;
-}
+    /* Loading bar */
+    #load-bar {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--gold), var(--gold-light));
+      width: 0%;
+      transition: width 0.2s ease;
+      z-index: 10;
+    }
 
-/* ── CANVAS COLUMN (right, sticky) ── */
-#canvas-col {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow: hidden;
-  background: #080306;
-}
+    /* ── HERO TEXT SECTION ── */
+    #hero-text {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 3.5rem 4rem;
+      text-align: right;
+      border-bottom: 1px solid rgba(201,164,98,0.08);
+      background: #0a0408;
+    }
 
-/* Blurred background canvas (fills black bars for portrait video) */
-#bg-canvas {
-  position: absolute;
-  inset: -60px;
-  width: calc(100% + 120px);
-  height: calc(100% + 120px);
-  display: block;
-  filter: blur(38px) brightness(0.3) saturate(1.5);
-}
+    #hero-text .eyebrow {
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+      margin-bottom: 2.5rem;
+      display: block;
+    }
 
-/* Sharp main canvas */
-#anim-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
+    .big-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: clamp(4rem, 8vw, 8rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+    .big-title span { color: var(--gold); display: block; }
 
-/* Cinematic wipe at end */
-#anim-transition {
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, #080306 0%, #2A0A12 100%);
-  opacity: 0; pointer-events: none;
-}
+    .hero-tagline {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: clamp(1.1rem, 2vw, 1.5rem);
+      font-weight: 300;
+      color: rgba(232,213,163,0.65);
+      margin-bottom: 3rem;
+    }
 
-/* Subtle vignette on the canvas side */
-.canvas-vignette {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    linear-gradient(to bottom, rgba(8,3,6,.7) 0%, transparent 15%, transparent 82%, rgba(8,3,6,.7) 100%),
-    linear-gradient(to right, rgba(8,3,6,.5) 0%, transparent 20%);
-}
-
-/* ── PROGRESS BAR ── */
-#scroll-progress {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: rgba(201,164,98,.1); pointer-events: none;
-}
-#scroll-progress-fill {
-  height: 100%; width: 0%;
-  background: linear-gradient(to right, var(--gold), rgba(201,164,98,.4));
-  transition: width .05s linear;
-}
-
-/* ── LOADING SCREEN ── */
-#loader {
-  position: absolute; inset: 0; z-index: 100;
-  background: #080306;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 1.5rem;
-  transition: opacity 1s ease, visibility 1s;
-}
-#loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-.loader-logo {
-  font-family: 'Frank Ruhl Libre', serif; font-size: 1.6rem; font-weight: 700;
-  letter-spacing: .22em; color: var(--gold-light);
-  animation: fadeIn .8s both;
-}
-
-.loader-macaron-wrap {
-  position: relative; width: 110px; height: 110px;
-  animation: floatLoader 3s ease-in-out infinite;
-}
-@keyframes floatLoader {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-.loader-macaron-wrap svg { width: 100%; height: 100%; }
-.loader-ring-track { fill: none; stroke: rgba(201,164,98,.12); stroke-width: 3; }
-.loader-ring-fill {
-  fill: none; stroke: var(--gold); stroke-width: 3;
-  stroke-linecap: round;
-  stroke-dasharray: 289; stroke-dashoffset: 289;
-  transform: rotate(-90deg); transform-origin: 50% 50%;
-  transition: stroke-dashoffset .15s linear;
-}
-.loader-pct {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-family: 'Frank Ruhl Libre', serif; font-size: 1.3rem; font-weight: 700;
-  color: var(--gold);
-}
-.loader-text {
-  font-size: .6rem; letter-spacing: .28em; color: rgba(201,164,98,.4);
-  text-transform: uppercase;
-}
-
-/* Scroll hint in first chapter */
-.scroll-hint {
-  display: flex; flex-direction: column; align-items: center; gap: .5rem;
-  margin-top: 2.5rem; align-self: flex-end;
-}
-.scroll-hint span {
-  font-size: .58rem; letter-spacing: .22em; color: rgba(232,213,163,.35);
-}
-.scroll-hint-line {
-  width: 1px; height: 44px;
-  background: linear-gradient(to bottom, rgba(201,164,98,.4), transparent);
-  animation: pulseDown 2.2s ease-in-out infinite;
-}
-@keyframes pulseDown {
-  0%,100% { opacity: .3; transform: scaleY(.4) translateY(-20px); transform-origin: top; }
-  50% { opacity: 1; transform: scaleY(1) translateY(0); transform-origin: top; }
-}
-
-/* ── VIDEO FALLBACK ── */
-#video-hero {
-  display: none;
-  position: relative; height: 100vh;
-  align-items: center; justify-content: center; overflow: hidden;
-}
-#hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hero-overlay-v {
-  position: absolute; inset: 0;
-  background: linear-gradient(160deg,rgba(42,10,18,.6) 0%,rgba(42,10,18,.3) 45%,rgba(42,10,18,.65) 100%);
-}
-.hero-fallback-content {
-  position: relative; z-index: 1; text-align: center;
-}
-.hero-fallback-content .ch-title { font-size: clamp(4rem,12vw,9rem); }
-
-/* ── MOBILE ── */
-@media (max-width: 768px) {
-  #split-wrap {
-    grid-template-columns: 1fr;
-    direction: rtl;
-  }
-  #canvas-col {
-    position: relative;
-    height: 60vh;
-    order: -1;
-  }
-  #text-col { direction: rtl; }
-  .chapter {
-    min-height: auto;
-    padding: 4rem 1.5rem;
-    border-left: none;
-    border-top: 1px solid rgba(201,164,98,.07);
-  }
-  .ch-title { font-size: clamp(2.2rem, 9vw, 3.5rem); }
-  .ch-body { max-width: 100%; }
-}
+    .scroll-hint {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+      margin-top: 3rem;
+    }
+    .scroll-hint span {
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      color: rgba(232,213,163,0.3);
+    }
+    .scroll-line {
+      width: 1px;
+      height: 44px;
+      background: linear-gradient(to bottom, rgba(201,164,98,0.4), transparent);
+      animation: pulseDown 2.2s ease-in-out infinite;
+    }
+    @keyframes pulseDown {
+      0%,100%{opacity:.3;transform:scaleY(.4) translateY(-20px);transform-origin:top}
+      50%{opacity:1;transform:scaleY(1) translateY(0);transform-origin:top}
+    }
 
     /* ── BUTTONS ── */
     .btn-outline {
@@ -304,11 +214,19 @@
       background:var(--gold); color:var(--burg-dark);
       font-family:'Assistant',sans-serif; font-size:.82rem; font-weight:600;
       text-decoration:none; transition:all .4s cubic-bezier(.16,1,.3,1);
+      position:relative; overflow:hidden;
     }
     .btn-solid:hover {
       background:var(--gold-light); transform:translateY(-2px);
       box-shadow:0 10px 35px rgba(201,164,98,.35);
     }
+    .btn-solid::after {
+      content:''; position:absolute; inset:0;
+      background:rgba(255,255,255,.15);
+      transform:scaleX(0); transform-origin:left;
+      transition:transform .4s cubic-bezier(.16,1,.3,1);
+    }
+    .btn-solid:hover::after { transform:scaleX(1); }
 
     /* ══════════════════════════════════════════
        PAGE SECTIONS
@@ -433,6 +351,7 @@
       background:var(--cream); padding:2.6rem; position:relative; text-align:right;
       box-shadow:0 4px 22px rgba(92,26,40,.07),0 1px 4px rgba(92,26,40,.04);
       transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .45s ease;
+      cursor:default;
     }
     .test-card:hover { transform:translateY(-5px); box-shadow:0 14px 44px rgba(92,26,40,.13),0 4px 14px rgba(92,26,40,.06); }
     .test-card::before { content:'\201D'; font-family:'Frank Ruhl Libre',serif; font-size:5.5rem; color:rgba(201,164,98,.12); position:absolute; top:.8rem; right:1.4rem; line-height:1; }
@@ -472,6 +391,35 @@
     .foot-bottom p { font-size:.75rem; font-weight:300; color:rgba(232,213,163,.28); }
     .foot-bottom em { font-family:'Frank Ruhl Libre',serif; color:rgba(201,164,98,.28); font-size:.82rem; }
 
+    /* ── ALL CONTENT SECTIONS IN LEFT COLUMN ── */
+    #content-col #about { padding: 7rem 0; background: var(--cream); }
+    #content-col .about-wrap {
+      grid-template-columns: 1fr;
+      padding: 0 3.5rem;
+      gap: 3rem;
+      max-width: 100%;
+    }
+    #content-col .about-img-box { grid-column: 1; grid-row: 2; }
+    #content-col .about-copy    { grid-column: 1; grid-row: 1; padding-right: 0; }
+    #content-col .about-img-box::before { display: none; }
+    #content-col .about-img { aspect-ratio: 16/9; }
+
+    #content-col #products { padding: 6rem 0; }
+    #content-col .prod-grid { grid-template-columns: 1fr 1fr; gap: 3px; max-width: 100%; }
+    #content-col .prod-header { padding: 0 3.5rem; }
+
+    #content-col #signature { padding: 7rem 0; }
+    #content-col .sig-inner { padding: 0 3.5rem; max-width: 100%; }
+    #content-col .pillars { grid-template-columns: 1fr 1fr; }
+
+    #content-col #testimonials { padding: 6rem 0; }
+    #content-col .test-grid { grid-template-columns: 1fr; padding: 0 3.5rem; max-width: 100%; }
+
+    #content-col #cta { padding: 8rem 0; }
+
+    #content-col .foot-wrap { padding: 0 3.5rem; max-width: 100%; }
+    #content-col .foot-top { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+
     /* SCROLL REVEAL */
     .reveal { opacity:0; transform:translateY(38px); transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1); }
     .reveal.from-right { transform:translateX(38px) translateY(0); }
@@ -496,25 +444,6 @@
       90%  { opacity:.15; transform:translateY(-120px) scale(.6); }
       100% { opacity:0;   transform:translateY(-140px) scale(0); }
     }
-
-    /* ── HOVER LIFT ON CARDS ── */
-    .test-card { cursor:default; }
-
-    /* ── PULSE BUTTON ── */
-    .btn-solid {
-      position:relative; overflow:hidden;
-    }
-    .btn-solid::after {
-      content:''; position:absolute; inset:0;
-      background:rgba(255,255,255,.15);
-      transform:scaleX(0); transform-origin:left;
-      transition:transform .4s cubic-bezier(.16,1,.3,1);
-    }
-    .btn-solid:hover::after { transform:scaleX(1); }
-
-    /* ══════════════════════════════════════════
-       MOBILE RESPONSIVE
-       ══════════════════════════════════════════ */
 
     /* ── Hamburger menu ── */
     #nav-toggle {
@@ -543,8 +472,8 @@
     }
     #mobile-menu a:active { color:var(--gold); }
 
+    /* ── MOBILE ── */
     @media (max-width: 768px) {
-      /* Nav */
       #nav { padding:1.2rem 1.5rem; }
       #nav.scrolled { padding:.9rem 1.5rem; }
       .nav-links { display:none; }
@@ -552,65 +481,45 @@
       #mobile-menu { display:flex; pointer-events:none; }
       #mobile-menu.open { pointer-events:all; }
 
-      /* Hero text */
-      .hero-title { font-size:clamp(3.5rem,18vw,6rem); }
-      .hero-sub   { font-size:1.1rem; margin-bottom:2rem; }
-      .hero-eye   { font-size:.62rem; letter-spacing:.16em; }
-      .mid-title  { font-size:clamp(1.6rem,7vw,2.5rem); }
-
-      /* Scroll hint */
-      .scroll-hint { bottom:1.5rem; }
-
-      /* About */
-      #about { padding:5rem 0; }
-      .about-wrap {
-        grid-template-columns:1fr; gap:3rem;
-        padding:0 1.5rem;
+      #site-wrap {
+        grid-template-columns: 1fr;
+        direction: rtl;
       }
-      .about-img-box { grid-column:1; grid-row:1; }
-      .about-img-box::before { display:none; }
-      .about-copy { grid-column:1; grid-row:2; padding-right:0; }
+      #photo-col {
+        position: relative;
+        height: 60vh;
+        order: -1;
+      }
+      #anim-canvas { width: 100%; height: 100%; object-fit: cover; }
+      #content-col { direction: rtl; }
+      #hero-text { min-height: 70vh; padding: 4rem 1.5rem 3rem; }
+      #content-col .about-wrap { padding: 0 1.5rem; }
+      #content-col .prod-header,
+      #content-col .sig-inner,
+      #content-col .test-grid,
+      #content-col .foot-wrap { padding-left: 1.5rem; padding-right: 1.5rem; }
+      #content-col .pillars { grid-template-columns: 1fr 1fr; }
+      #content-col .foot-top { grid-template-columns: 1fr; }
+      .foot-bottom { flex-direction:column; gap:.8rem; text-align:center; }
 
-      /* Products */
-      #products { padding:5rem 0; }
+      /* Products on mobile */
       .prod-grid { grid-template-columns:1fr 1fr; gap:2px; }
       .prod-info { padding:1rem 1rem; }
       .prod-name { font-size:1rem; }
-      /* On mobile: always show info (no hover) */
       .prod-desc { opacity:1; transform:none; }
       .prod-tick { transform:scaleX(1); }
       .prod-info { transform:translateY(0); }
 
-      /* Signature */
-      #signature { padding:6rem 0; }
-      .sig-inner { padding:0 1.5rem; }
-      .pillars { grid-template-columns:1fr 1fr; gap:2rem; }
-      .pillar:nth-child(n) { animation:none; } /* disable float on mobile */
-
-      /* Testimonials */
-      #testimonials { padding:5rem 0; }
-      .test-grid { grid-template-columns:1fr; padding:0 1.5rem; gap:1.5rem; }
+      /* Signature on mobile */
+      .pillar:nth-child(n) { animation:none; }
 
       /* CTA */
-      #cta { padding:7rem 0; }
       .cta-title { font-size:clamp(2rem,9vw,3.5rem); }
-
-      /* Footer */
-      footer { padding:3rem 0 2rem; }
-      .foot-wrap { padding:0 1.5rem; }
-      .foot-top { grid-template-columns:1fr; gap:2.5rem; }
-      .foot-brand p { max-width:100%; }
-      .foot-bottom { flex-direction:column; gap:.8rem; text-align:center; }
-
-      /* Section padding */
-      .prod-header { padding:0 1.5rem; }
-      .test-header { padding:0 1.5rem; }
     }
 
     @media (max-width: 480px) {
-      .prod-grid { grid-template-columns:1fr; }
-      .pillars { grid-template-columns:1fr 1fr; gap:1.5rem; }
-      .hero-title { font-size:clamp(3rem,16vw,5rem); }
+      #content-col .prod-grid { grid-template-columns: 1fr; }
+      #content-col .pillars { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     }
   </style>
 </head>
@@ -640,454 +549,326 @@
   <a href="#cta"          class="mob-link">הזמנה</a>
 </div>
 
-<!-- ══ SCROLL ANIMATION HERO (split screen) ══ -->
-<div id="scroll-hero">
-  <div id="split-wrap">
+<!-- ══ SITE WRAP: Obsidian split screen ══ -->
+<div id="site-wrap">
 
-    <!-- TEXT COLUMN (left, scrolls) -->
-    <div id="text-col">
+  <!-- LEFT: all content scrolls -->
+  <div id="content-col">
 
-      <!-- Chapter 0: Brand intro -->
-      <div class="chapter" id="ch-0">
-        <p class="ch-num"><span class="ch-num-line"></span>001 / הסיפור שלנו</p>
-        <h1 class="ch-title">MAY<span>CAKE</span></h1>
-        <p class="ch-body">מאפייה יוקרתית שנולדה מתוך אהבה לאומנות הקונדיטוריה. כל יצירה — חוויה בלתי נשכחת.</p>
-        <a href="#cta" class="btn-outline" style="align-self:flex-end">להזמנה</a>
-        <div class="scroll-hint" id="scroll-hint">
-          <span>גלול</span>
-          <div class="scroll-hint-line"></div>
+    <!-- Hero -->
+    <section id="hero-text">
+      <p class="eyebrow">001 / מאפייה יוקרתית</p>
+      <h1 class="big-title">MAY<br><span>CAKE</span></h1>
+      <p class="hero-tagline">כל ביס הוא חוויה</p>
+      <a href="#cta" class="btn-outline">להזמנה</a>
+      <div class="scroll-hint">
+        <span>גלול</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ══ ABOUT ══ -->
+    <section id="about">
+      <div class="about-wrap">
+        <div class="about-img-box reveal from-right">
+          <img src="about-chef.jpg" alt="מיי — קונדיטורית" class="about-img" />
+        </div>
+        <div class="about-copy">
+          <p class="eyebrow reveal d1"><span class="eyebrow-line"></span>הסיפור שלנו</p>
+          <h2 class="sec-title reveal d2">מיוצר עם<br>תשוקה אמיתית</h2>
+          <div class="gold-bar reveal d3"></div>
+          <p class="body-copy reveal d3">
+            כל עוגה שיוצאת מהמטבח שלנו נושאת חלק מהלב שלנו.
+            <strong>מיי</strong> התחילה את המסע הזה עם אמונה אחת פשוטה —
+            שעוגה אמיתית לא רק אוכלים אותה, אלא <strong>מרגישים</strong> אותה.
+          </p>
+          <p class="body-copy reveal d4">
+            כל יצירה מוכנה <strong>ביד</strong> מהתחלה, מחומרי גלם מהשורה הראשונה בלבד.
+            ללא קיצורי דרך. ללא פשרות. רק <strong>איכות פרמיום</strong> בכל שכבה.
+          </p>
+          <p class="body-copy reveal d5">
+            מחגיגות אינטימיות ועד לחתונות מפוארות —
+            אנחנו יוצרים <strong>חוויות בלתי נשכחות</strong> עטופות בסוכר ובאומנות.
+          </p>
         </div>
       </div>
+    </section>
 
-      <!-- Chapter 1: Handmade -->
-      <div class="chapter" id="ch-1">
-        <p class="ch-num"><span class="ch-num-line"></span>002 / עבודת יד</p>
-        <h2 class="ch-title">מיוצר<span>ביד</span></h2>
-        <p class="ch-body">כל שכבה, כל קישוט, כל פרט — נוצרים בידיים. אנחנו לא מאמינים בקיצורי דרך. רק אמנות אמיתית.</p>
+    <div class="section-bridge"></div>
+
+    <!-- ══ PRODUCTS ══ -->
+    <section id="products">
+      <div class="prod-header">
+        <p class="eyebrow eyebrow-center reveal">היצירות שלנו</p>
+        <h2 class="sec-title reveal d1" style="color:var(--cream)">הקולקציה</h2>
+        <div class="gold-bar-c reveal d2"></div>
+        <p class="reveal d3" style="font-size:1.05rem;font-weight:300;color:rgba(232,213,163,.55);max-width:480px;margin:0 auto">
+          כל יצירה — יצירת אמנות אכילה ייחודית
+        </p>
       </div>
-
-      <!-- Chapter 2: Premium -->
-      <div class="chapter" id="ch-2">
-        <p class="ch-num"><span class="ch-num-line"></span>003 / חומרי גלם</p>
-        <h2 class="ch-title">פרמיום<span>בלבד</span></h2>
-        <p class="ch-body">שוקולד בלגי, וניל אפריקאי, פירות טריים. אנחנו בוחרים את הטוב ביותר בעולם כדי שתקבלו את השלמות.</p>
-      </div>
-
-      <!-- Chapter 3: CTA -->
-      <div class="chapter" id="ch-3">
-        <p class="ch-num"><span class="ch-num-line"></span>004 / החוויה</p>
-        <h2 class="ch-title">טעמו<span>שלמות</span></h2>
-        <p class="ch-body">מוכנים לחוויה בלתי נשכחת? כל עוגה מותאמת אישית לפי החזון שלכם.</p>
-        <a href="#cta" class="btn-outline" style="align-self:flex-end">הזמינו עכשיו</a>
-      </div>
-
-    </div><!-- /text-col -->
-
-    <!-- CANVAS COLUMN (right, sticky) -->
-    <div id="canvas-col">
-
-      <!-- Loading screen -->
-      <div id="loader">
-        <p class="loader-logo">MAY CAKE</p>
-        <div class="loader-macaron-wrap">
-          <svg viewBox="0 0 100 100">
-            <!-- Macaron shape -->
-            <ellipse cx="50" cy="38" rx="32" ry="18" fill="#C9A462" opacity=".9"/>
-            <ellipse cx="50" cy="38" rx="28" ry="14" fill="#E8D5A3" opacity=".7"/>
-            <rect x="18" y="47" width="64" height="8" rx="4" fill="#5C1A28" opacity=".6"/>
-            <ellipse cx="50" cy="62" rx="32" ry="18" fill="#C9A462" opacity=".9"/>
-            <ellipse cx="50" cy="62" rx="28" ry="14" fill="#E8D5A3" opacity=".7"/>
-            <!-- Ring progress -->
-            <circle cx="50" cy="50" r="46" class="loader-ring-track"/>
-            <circle cx="50" cy="50" r="46" class="loader-ring-fill" id="ring-fill"/>
-          </svg>
-          <div class="loader-pct" id="loader-pct">0%</div>
+      <div class="prod-grid">
+        <div class="prod-card reveal d1">
+          <img src="product-cut.jpg" alt="חלום הכלה" />
+          <div class="prod-veil"></div>
+          <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">חלום הכלה</p><p class="prod-desc">עוגה רב-קומתית לאירוע המושלם שלכם</p></div>
         </div>
-        <p class="loader-text">טוען חוויה</p>
+        <div class="prod-card reveal d2">
+          <img src="https://placehold.co/600x800/4A1020/E8D5A3?text=Celebration" alt="חגיגה" />
+          <div class="prod-veil"></div>
+          <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">חגיגה</p><p class="prod-desc">יצירות מיוחדות לרגעי שיא</p></div>
+        </div>
+        <div class="prod-card reveal d3">
+          <img src="https://placehold.co/600x800/2A0A12/C9A462?text=Dark+Velvet" alt="קטיפה שחורה" />
+          <div class="prod-veil"></div>
+          <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">קטיפה שחורה</p><p class="prod-desc">שוקולד בלגי, 72% קקאו יוקרתי</p></div>
+        </div>
+        <div class="prod-card reveal d1">
+          <img src="https://placehold.co/600x800/5C1A28/FAF6F0?text=Blossom" alt="פריחה" />
+          <div class="prod-veil"></div>
+          <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">פריחה</p><p class="prod-desc">פרחים אכילים, עבודת יד מסוכר</p></div>
+        </div>
+        <div class="prod-card reveal d2">
+          <img src="https://placehold.co/600x800/3D0F1A/F5EDD8?text=Cloud+Mousse" alt="ענן מוס" />
+          <div class="prod-veil"></div>
+          <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">ענן מוס</p><p class="prod-desc">מרקמים אוויריים ועדינים</p></div>
+        </div>
+        <div class="prod-card reveal d3">
+          <img src="https://placehold.co/600x800/1C0B10/C9A462?text=Petit+Luxe" alt="פטי לוקס" />
+          <div class="prod-veil"></div>
+          <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">פטי לוקס</p><p class="prod-desc">שלמות מיניאטורית, גדולה בטעם</p></div>
+        </div>
       </div>
+    </section>
 
-      <!-- Blurred background (fills portrait video edges) -->
-      <canvas id="bg-canvas"></canvas>
+    <!-- ══ SIGNATURE ══ -->
+    <section id="signature">
+      <div class="sig-bg" id="sigBg">יוקרה</div>
+      <div class="sig-inner">
+        <p class="eyebrow eyebrow-center reveal" style="color:var(--gold)">ההבדל של MAY CAKE</p>
+        <h2 class="sec-title reveal d1" style="color:var(--cream);font-size:clamp(2rem,4vw,3.4rem)">
+          כאשר אמנות פוגשת <span style="color:var(--gold)">טעם</span>
+        </h2>
+        <div class="gold-bar-c reveal d2"></div>
+        <p class="sig-quote reveal d2">
+          "אנחנו לא רק אופים עוגות. אנחנו יוצרים
+          <strong>זיכרונות</strong> שנשארים הרבה אחרי הביס האחרון."
+        </p>
+        <div class="pillars">
+          <div class="pillar reveal d1"><div class="pillar-stem"></div><p class="pillar-title">עבודת יד</p><p class="pillar-text">כל פרט עוצב ביד,<br>לעולם לא במכונה</p></div>
+          <div class="pillar reveal d2"><div class="pillar-stem"></div><p class="pillar-title">יוקרה</p><p class="pillar-text">חומרי גלם מיובאים,<br>ללא פשרות</p></div>
+          <div class="pillar reveal d3"><div class="pillar-stem"></div><p class="pillar-title">מותאם אישית</p><p class="pillar-text">עיצוב ייחודי<br>לפי החזון שלכם</p></div>
+          <div class="pillar reveal d4"><div class="pillar-stem"></div><p class="pillar-title">בלתי נשכח</p><p class="pillar-text">טעמים שנשארים<br>איתכם לנצח</p></div>
+        </div>
+      </div>
+    </section>
 
-      <!-- Sharp main canvas -->
+    <div class="section-bridge"></div>
+
+    <!-- ══ TESTIMONIALS ══ -->
+    <section id="testimonials">
+      <div class="test-header">
+        <p class="eyebrow eyebrow-center reveal">קולות של אהבה</p>
+        <h2 class="sec-title reveal d1" style="font-size:clamp(2rem,4vw,3rem)">מה הלקוחות שלנו אומרים</h2>
+        <div class="gold-bar-c reveal d2"></div>
+      </div>
+      <div class="test-grid">
+        <div class="test-card reveal d1">
+          <div class="test-stars">★★★★★</div>
+          <p class="test-text">"עוגת החתונה שמיי יצרה עבורנו הייתה מעבר לכל מה שדמיינו. האורחים לא הפסיקו לדבר על זה שבועות. אמנות טהורה."</p>
+          <div class="test-author">
+            <img src="https://placehold.co/80x80/5C1A28/C9A462?text=ש" alt="שרה" class="test-avatar" />
+            <div><p class="test-name">שרה ודוד</p><p class="test-occ">חתונה — יוני 2024</p></div>
+          </div>
+        </div>
+        <div class="test-card reveal d2">
+          <div class="test-stars">★★★★★</div>
+          <p class="test-text">"הזמנתי ממאפיות רבות, אבל שום דבר לא משתווה. עוגת הקטיפה השחורה היא חוויה רוחנית. אני לא מגזימה."</p>
+          <div class="test-author">
+            <img src="https://placehold.co/80x80/3D0F1A/E8D5A3?text=מ" alt="מיכל" class="test-avatar" />
+            <div><p class="test-name">מיכל ט.</p><p class="test-occ">חגיגת יום הולדת</p></div>
+          </div>
+        </div>
+        <div class="test-card reveal d3">
+          <div class="test-stars">★★★★★</div>
+          <p class="test-text">"מיי הבינה את החזון שלי מיד. עיצוב הפרחים המותאם אישית היה בדיוק מה שחלמתי. חוויה יוקרתית מתחילה לסוף."</p>
+          <div class="test-author">
+            <img src="https://placehold.co/80x80/2A0A12/C9A462?text=ל" alt="לירן" class="test-avatar" />
+            <div><p class="test-name">לירן כ.</p><p class="test-occ">עוגת יום נישואין</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ CTA ══ -->
+    <section id="cta">
+      <div class="cta-inner">
+        <p class="eyebrow eyebrow-center reveal" style="color:rgba(201,164,98,.65)">התחילו את החוויה</p>
+        <h2 class="cta-title reveal d1">מוכנים לטעום<br>שלמות?</h2>
+        <p class="cta-sub reveal d2">כל זיכרון גדול ראוי לעוגה יוצאת דופן.</p>
+        <div class="reveal d3"><a href="mailto:hello@maycake.com" class="btn-solid">להזמנת העוגה שלכם</a></div>
+      </div>
+    </section>
+
+    <!-- ══ FOOTER ══ -->
+    <footer>
+      <div class="foot-wrap">
+        <div class="foot-top">
+          <div class="foot-brand">
+            <h3>MAY CAKE</h3>
+            <p>עוגות יוקרה אומנותיות המיוצרות בתשוקה, חומרי גלם פרמיום ומחויבות עמוקה ליופי.</p>
+            <div class="socials">
+              <a href="#" class="soc-btn" aria-label="אינסטגרם">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="#" class="soc-btn" aria-label="פייסבוק">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              </a>
+              <a href="#" class="soc-btn" aria-label="טיקטוק">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+              </a>
+              <a href="#" class="soc-btn" aria-label="וואטסאפ">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="foot-col">
+            <h4>ניווט</h4>
+            <ul>
+              <li><a href="#about">הסיפור שלנו</a></li>
+              <li><a href="#products">יצירות</a></li>
+              <li><a href="#signature">החוויה</a></li>
+              <li><a href="#testimonials">המלצות</a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h4>צור קשר</h4>
+            <ul>
+              <li><a href="mailto:hello@maycake.com">hello@maycake.com</a></li>
+              <li><a href="tel:+972501234567">050-123-4567</a></li>
+              <li><a href="#">אינסטגרם</a></li>
+              <li><a href="#">וואטסאפ</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="foot-bottom">
+          <p>© 2024 MAY CAKE. כל הזכויות שמורות.</p>
+          <em>מיוצר עם אהבה</em>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- /content-col -->
+
+  <!-- RIGHT: sticky canvas animation -->
+  <div id="photo-col">
+    <div id="anim-wrap">
       <canvas id="anim-canvas"></canvas>
-
-      <!-- Cinematic transition overlay -->
-      <div id="anim-transition"></div>
-
-      <!-- Vignette -->
-      <div class="canvas-vignette"></div>
-
-      <!-- Progress line -->
-      <div id="scroll-progress"><div id="scroll-progress-fill"></div></div>
-
-    </div><!-- /canvas-col -->
-
-  </div><!-- /split-wrap -->
-</div><!-- /scroll-hero -->
-
-<!-- Video fallback -->
-<div id="video-hero">
-  <video id="hero-video" autoplay muted loop playsinline>
-    <source src="fd6a5e7df2f14dbf8cf0b4d57e428440_1774187612 (1).mp4" type="video/mp4" />
-  </video>
-  <div class="hero-overlay-v"></div>
-  <div class="hero-fallback-content">
-    <p class="ch-num" style="justify-content:center;color:var(--gold)">מאפייה יוקרתית</p>
-    <h1 class="ch-title" style="text-align:center">MAY<span>CAKE</span></h1>
-    <div style="text-align:center;margin-top:2rem"><a href="#cta" class="btn-outline">להזמנה</a></div>
-  </div>
-</div>
-
-<!-- ══ ABOUT ══ -->
-<section id="about">
-  <div class="about-wrap">
-    <div class="about-img-box reveal from-right">
-      <img src="about-chef.jpg" alt="מיי — קונדיטורית" class="about-img" />
-    </div>
-    <div class="about-copy">
-      <p class="eyebrow reveal d1"><span class="eyebrow-line"></span>הסיפור שלנו</p>
-      <h2 class="sec-title reveal d2">מיוצר עם<br>תשוקה אמיתית</h2>
-      <div class="gold-bar reveal d3"></div>
-      <p class="body-copy reveal d3">
-        כל עוגה שיוצאת מהמטבח שלנו נושאת חלק מהלב שלנו.
-        <strong>מיי</strong> התחילה את המסע הזה עם אמונה אחת פשוטה —
-        שעוגה אמיתית לא רק אוכלים אותה, אלא <strong>מרגישים</strong> אותה.
-      </p>
-      <p class="body-copy reveal d4">
-        כל יצירה מוכנה <strong>ביד</strong> מהתחלה, מחומרי גלם מהשורה הראשונה בלבד.
-        ללא קיצורי דרך. ללא פשרות. רק <strong>איכות פרמיום</strong> בכל שכבה.
-      </p>
-      <p class="body-copy reveal d5">
-        מחגיגות אינטימיות ועד לחתונות מפוארות —
-        אנחנו יוצרים <strong>חוויות בלתי נשכחות</strong> עטופות בסוכר ובאומנות.
-      </p>
+      <div class="photo-overlay"></div>
+      <div class="photo-brand">MAY CAKE</div>
+      <div id="load-bar"></div>
     </div>
   </div>
-</section>
 
-<div class="section-bridge"></div>
+</div><!-- /site-wrap -->
 
-<!-- ══ PRODUCTS ══ -->
-<section id="products">
-  <div class="prod-header">
-    <p class="eyebrow eyebrow-center reveal">היצירות שלנו</p>
-    <h2 class="sec-title reveal d1" style="color:var(--cream)">הקולקציה</h2>
-    <div class="gold-bar-c reveal d2"></div>
-    <p class="reveal d3" style="font-size:1.05rem;font-weight:300;color:rgba(232,213,163,.55);max-width:480px;margin:0 auto">
-      כל יצירה — יצירת אמנות אכילה ייחודית
-    </p>
-  </div>
-  <div class="prod-grid">
-    <div class="prod-card reveal d1">
-      <img src="product-cut.jpg" alt="חלום הכלה" />
-      <div class="prod-veil"></div>
-      <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">חלום הכלה</p><p class="prod-desc">עוגה רב-קומתית לאירוע המושלם שלכם</p></div>
-    </div>
-    <div class="prod-card reveal d2">
-      <img src="https://placehold.co/600x800/4A1020/E8D5A3?text=Celebration" alt="חגיגה" />
-      <div class="prod-veil"></div>
-      <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">חגיגה</p><p class="prod-desc">יצירות מיוחדות לרגעי שיא</p></div>
-    </div>
-    <div class="prod-card reveal d3">
-      <img src="https://placehold.co/600x800/2A0A12/C9A462?text=Dark+Velvet" alt="קטיפה שחורה" />
-      <div class="prod-veil"></div>
-      <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">קטיפה שחורה</p><p class="prod-desc">שוקולד בלגי, 72% קקאו יוקרתי</p></div>
-    </div>
-    <div class="prod-card reveal d1">
-      <img src="https://placehold.co/600x800/5C1A28/FAF6F0?text=Blossom" alt="פריחה" />
-      <div class="prod-veil"></div>
-      <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">פריחה</p><p class="prod-desc">פרחים אכילים, עבודת יד מסוכר</p></div>
-    </div>
-    <div class="prod-card reveal d2">
-      <img src="https://placehold.co/600x800/3D0F1A/F5EDD8?text=Cloud+Mousse" alt="ענן מוס" />
-      <div class="prod-veil"></div>
-      <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">ענן מוס</p><p class="prod-desc">מרקמים אוויריים ועדינים</p></div>
-    </div>
-    <div class="prod-card reveal d3">
-      <img src="https://placehold.co/600x800/1C0B10/C9A462?text=Petit+Luxe" alt="פטי לוקס" />
-      <div class="prod-veil"></div>
-      <div class="prod-info"><div class="prod-tick"></div><p class="prod-name">פטי לוקס</p><p class="prod-desc">שלמות מיניאטורית, גדולה בטעם</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ SIGNATURE ══ -->
-<section id="signature">
-  <div class="sig-bg" id="sigBg">יוקרה</div>
-  <div class="sig-inner">
-    <p class="eyebrow eyebrow-center reveal" style="color:var(--gold)">ההבדל של MAY CAKE</p>
-    <h2 class="sec-title reveal d1" style="color:var(--cream);font-size:clamp(2rem,4vw,3.4rem)">
-      כאשר אמנות פוגשת <span style="color:var(--gold)">טעם</span>
-    </h2>
-    <div class="gold-bar-c reveal d2"></div>
-    <p class="sig-quote reveal d2">
-      "אנחנו לא רק אופים עוגות. אנחנו יוצרים
-      <strong>זיכרונות</strong> שנשארים הרבה אחרי הביס האחרון."
-    </p>
-    <div class="pillars">
-      <div class="pillar reveal d1"><div class="pillar-stem"></div><p class="pillar-title">עבודת יד</p><p class="pillar-text">כל פרט עוצב ביד,<br>לעולם לא במכונה</p></div>
-      <div class="pillar reveal d2"><div class="pillar-stem"></div><p class="pillar-title">יוקרה</p><p class="pillar-text">חומרי גלם מיובאים,<br>ללא פשרות</p></div>
-      <div class="pillar reveal d3"><div class="pillar-stem"></div><p class="pillar-title">מותאם אישית</p><p class="pillar-text">עיצוב ייחודי<br>לפי החזון שלכם</p></div>
-      <div class="pillar reveal d4"><div class="pillar-stem"></div><p class="pillar-title">בלתי נשכח</p><p class="pillar-text">טעמים שנשארים<br>איתכם לנצח</p></div>
-    </div>
-  </div>
-</section>
-
-<div class="section-bridge"></div>
-
-<!-- ══ TESTIMONIALS ══ -->
-<section id="testimonials">
-  <div class="test-header">
-    <p class="eyebrow eyebrow-center reveal">קולות של אהבה</p>
-    <h2 class="sec-title reveal d1" style="font-size:clamp(2rem,4vw,3rem)">מה הלקוחות שלנו אומרים</h2>
-    <div class="gold-bar-c reveal d2"></div>
-  </div>
-  <div class="test-grid">
-    <div class="test-card reveal d1">
-      <div class="test-stars">★★★★★</div>
-      <p class="test-text">"עוגת החתונה שמיי יצרה עבורנו הייתה מעבר לכל מה שדמיינו. האורחים לא הפסיקו לדבר על זה שבועות. אמנות טהורה."</p>
-      <div class="test-author">
-        <img src="https://placehold.co/80x80/5C1A28/C9A462?text=ש" alt="שרה" class="test-avatar" />
-        <div><p class="test-name">שרה ודוד</p><p class="test-occ">חתונה — יוני 2024</p></div>
-      </div>
-    </div>
-    <div class="test-card reveal d2">
-      <div class="test-stars">★★★★★</div>
-      <p class="test-text">"הזמנתי ממאפיות רבות, אבל שום דבר לא משתווה. עוגת הקטיפה השחורה היא חוויה רוחנית. אני לא מגזימה."</p>
-      <div class="test-author">
-        <img src="https://placehold.co/80x80/3D0F1A/E8D5A3?text=מ" alt="מיכל" class="test-avatar" />
-        <div><p class="test-name">מיכל ט.</p><p class="test-occ">חגיגת יום הולדת</p></div>
-      </div>
-    </div>
-    <div class="test-card reveal d3">
-      <div class="test-stars">★★★★★</div>
-      <p class="test-text">"מיי הבינה את החזון שלי מיד. עיצוב הפרחים המותאם אישית היה בדיוק מה שחלמתי. חוויה יוקרתית מתחילה לסוף."</p>
-      <div class="test-author">
-        <img src="https://placehold.co/80x80/2A0A12/C9A462?text=ל" alt="לירן" class="test-avatar" />
-        <div><p class="test-name">לירן כ.</p><p class="test-occ">עוגת יום נישואין</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ CTA ══ -->
-<section id="cta">
-  <div class="cta-inner">
-    <p class="eyebrow eyebrow-center reveal" style="color:rgba(201,164,98,.65)">התחילו את החוויה</p>
-    <h2 class="cta-title reveal d1">מוכנים לטעום<br>שלמות?</h2>
-    <p class="cta-sub reveal d2">כל זיכרון גדול ראוי לעוגה יוצאת דופן.</p>
-    <div class="reveal d3"><a href="mailto:hello@maycake.com" class="btn-solid">להזמנת העוגה שלכם</a></div>
-  </div>
-</section>
-
-<!-- ══ FOOTER ══ -->
-<footer>
-  <div class="foot-wrap">
-    <div class="foot-top">
-      <div class="foot-brand">
-        <h3>MAY CAKE</h3>
-        <p>עוגות יוקרה אומנותיות המיוצרות בתשוקה, חומרי גלם פרמיום ומחויבות עמוקה ליופי.</p>
-        <div class="socials">
-          <a href="#" class="soc-btn" aria-label="אינסטגרם">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-          </a>
-          <a href="#" class="soc-btn" aria-label="פייסבוק">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-          </a>
-          <a href="#" class="soc-btn" aria-label="טיקטוק">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
-          </a>
-          <a href="#" class="soc-btn" aria-label="וואטסאפ">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          </a>
-        </div>
-      </div>
-      <div class="foot-col">
-        <h4>ניווט</h4>
-        <ul>
-          <li><a href="#about">הסיפור שלנו</a></li>
-          <li><a href="#products">יצירות</a></li>
-          <li><a href="#signature">החוויה</a></li>
-          <li><a href="#testimonials">המלצות</a></li>
-        </ul>
-      </div>
-      <div class="foot-col">
-        <h4>צור קשר</h4>
-        <ul>
-          <li><a href="mailto:hello@maycake.com">hello@maycake.com</a></li>
-          <li><a href="tel:+972501234567">050-123-4567</a></li>
-          <li><a href="#">אינסטגרם</a></li>
-          <li><a href="#">וואטסאפ</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="foot-bottom">
-      <p>© 2024 MAY CAKE. כל הזכויות שמורות.</p>
-      <em>מיוצר עם אהבה</em>
-    </div>
-  </div>
-</footer>
-
-<!-- ══════════════════════════════════════════════════
-     SCROLL ANIMATION ENGINE
-     ══════════════════════════════════════════════════ -->
 <script>
+// ══════════════════════════════════════════
+//  CANVAS SCROLL ANIMATION
+// ══════════════════════════════════════════
 (async () => {
-  const PRELOAD_STEP = 4;
-  const FRAME_PATH   = i => `frames/frame_${String(i).padStart(4,'0')}.webp`;
+  const canvas  = document.getElementById('anim-canvas');
+  const loadBar = document.getElementById('load-bar');
+  const ctx     = canvas.getContext('2d');
 
-  const hero       = document.getElementById('scroll-hero');
-  const loader     = document.getElementById('loader');
-  const ringFill   = document.getElementById('ring-fill');
-  const loaderPct  = document.getElementById('loader-pct');
-  const progFill   = document.getElementById('scroll-progress-fill');
-  const hint       = document.getElementById('scroll-hint');
-  const transition = document.getElementById('anim-transition');
-
-  const bgCanvas   = document.getElementById('bg-canvas');
-  const canvas     = document.getElementById('anim-canvas');
-  const ctx        = canvas.getContext('2d');
-
-  let frames = [], totalFrames = 0, currentFrameIdx = 0, rafPending = false;
-
-  function resizeCanvases() {
-    const col   = document.getElementById('canvas-col');
-    const w     = col.offsetWidth || Math.round(window.innerWidth * 0.58);
-    const h     = window.innerHeight;
-    canvas.width  = w;
-    canvas.height = h;
-    if (frames[currentFrameIdx]?.complete) renderFrame(currentFrameIdx);
+  // Fit canvas to its container
+  function resize() {
+    const wrap = canvas.parentElement;
+    canvas.width  = wrap.clientWidth  * devicePixelRatio;
+    canvas.height = wrap.clientHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    if (currentFrame) drawFrame(currentFrame);
   }
-  window.addEventListener('resize', resizeCanvases, { passive: true });
+  window.addEventListener('resize', resize);
 
-  function drawCover(c, img) {
-    const cw = c.width, ch = c.height;
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-    const scale = Math.max(cw / iw, ch / ih);
-    c.drawImage(img, (cw - iw * scale) / 2, (ch - ih * scale) / 2, iw * scale, ih * scale);
+  // Cover-fit draw
+  function drawFrame(img) {
+    const cw = canvas.width  / devicePixelRatio;
+    const ch = canvas.height / devicePixelRatio;
+    const ir = img.naturalWidth / img.naturalHeight;
+    const cr = cw / ch;
+    let sw, sh, sx, sy;
+    if (ir > cr) { sh = img.naturalHeight; sw = sh * cr; sx = (img.naturalWidth - sw) / 2; sy = 0; }
+    else         { sw = img.naturalWidth;  sh = sw / cr; sx = 0; sy = (img.naturalHeight - sh) / 2; }
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, cw, ch);
   }
 
-  function drawContain(c, img) {
-    const cw = c.width, ch = c.height;
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-    const scale = Math.min(cw / iw, ch / ih);
-    c.drawImage(img, (cw - iw * scale) / 2, (ch - ih * scale) / 2, iw * scale, ih * scale);
-  }
-
-  function renderFrame(idx) {
-    const img = frames[idx];
-    if (!img?.complete || !img.naturalWidth) return;
-    const cw = canvas.width, ch = canvas.height;
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-    // Cover-fit: fills entire canvas, crops sides if needed
-    const scale = Math.max(cw / iw, ch / ih);
-    const dx = (cw - iw * scale) / 2;
-    const dy = (ch - ih * scale) / 2;
-    ctx.drawImage(img, dx, dy, iw * scale, ih * scale);
-  }
-
-  function onScroll() {
-    if (rafPending) return;
-    rafPending = true;
-    requestAnimationFrame(tick);
-  }
-
-  function tick() {
-    rafPending = false;
-    const scrollY     = window.scrollY;
-    const heroTop     = hero.offsetTop;
-    const scrollable  = hero.offsetHeight - window.innerHeight;
-    const progress    = Math.max(0, Math.min(1, (scrollY - heroTop) / scrollable));
-    const frameIdx    = Math.min(totalFrames - 1, Math.round(progress * (totalFrames - 1)));
-
-    if (frameIdx !== currentFrameIdx) {
-      currentFrameIdx = frameIdx;
-      const f = frames[frameIdx];
-      if (f?.complete) renderFrame(frameIdx);
-      else {
-        for (let d = 1; d < totalFrames; d++) {
-          const prev = frameIdx - d, next = frameIdx + d;
-          if (prev >= 0 && frames[prev]?.complete) { renderFrame(prev); break; }
-          if (next < totalFrames && frames[next]?.complete) { renderFrame(next); break; }
-        }
-      }
-    }
-
-    progFill.style.width = `${progress * 100}%`;
-
-    // Scroll hint
-    if (hint) hint.style.opacity = progress < 0.04 ? 1 : Math.max(0, 1 - (progress - 0.04) / 0.05);
-
-    // End cinematic transition
-    transition.style.opacity = progress > 0.9 ? (progress - 0.9) / 0.1 : 0;
-  }
-
-  function loadFrame(i) {
-    return new Promise(resolve => {
-      if (frames[i]?.complete) { resolve(); return; }
-      const img = new Image();
-      img.onload = img.onerror = resolve;
-      img.src = FRAME_PATH(i + 1);
-      frames[i] = img;
-    });
-  }
-
-  async function preloadAll(count, onProgress) {
-    frames = new Array(count).fill(null);
-    let done = 0;
-
-    // Phase A: sparse keyframes
-    const sparse = [];
-    for (let i = 0; i < count; i += PRELOAD_STEP) sparse.push(i);
-    if (!sparse.includes(0)) sparse.unshift(0);
-
-    await Promise.all(sparse.map(i => loadFrame(i).then(() => {
-      done++;
-      onProgress(done / count);
-      if (done === sparse.length) renderFrame(0);
-    })));
-
-    // Phase B: fill remaining
-    const rest = [];
-    for (let i = 0; i < count; i++) if (!frames[i]) rest.push(i);
-    const BATCH = 8;
-    for (let b = 0; b < rest.length; b += BATCH) {
-      await Promise.all(rest.slice(b, b + BATCH).map(i => loadFrame(i).then(() => {
-        done++;
-        onProgress(done / count);
-      })));
-    }
-  }
-
+  // Load frames
+  let frameCount = 80, ext = 'webp';
   try {
-    const res = await fetch('frames/count.json');
-    if (!res.ok) throw new Error('no frames');
-    const { count } = await res.json();
-    if (!count || count < 2) throw new Error('too few frames');
-    totalFrames = count;
+    const meta = await fetch('frames/count.json').then(r => r.json());
+    frameCount = meta.count;
+    ext        = meta.ext || 'webp';
+  } catch(e) {}
 
-    // Wait for layout to be computed before sizing canvases
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    resizeCanvases();
-    window.addEventListener('scroll', onScroll, { passive: true });
+  const frames = new Array(frameCount);
+  let loaded   = 0;
+  let currentFrame = null;
 
-    await preloadAll(count, pct => {
-      const offset = 289 - 289 * pct;
-      if (ringFill) ringFill.style.strokeDashoffset = offset;
-      if (loaderPct) loaderPct.textContent = Math.round(pct * 100) + '%';
-    });
+  function pad(n) { return String(n).padStart(4,'0'); }
 
-    loader.classList.add('hidden');
-    renderFrame(0);
+  // Preload all frames
+  const promises = Array.from({length: frameCount}, (_, i) => new Promise(resolve => {
+    const img = new Image();
+    img.onload = img.onerror = () => {
+      frames[i] = img.complete && img.naturalWidth ? img : null;
+      loaded++;
+      if (loadBar) loadBar.style.width = (loaded / frameCount * 100) + '%';
+      if (loaded === frameCount && loadBar) {
+        setTimeout(() => { loadBar.style.opacity = '0'; }, 600);
+      }
+      resolve();
+    };
+    img.src = `frames/frame_${pad(i+1)}.${ext}`;
+  }));
 
-  } catch {
-    document.getElementById('scroll-hero').style.display = 'none';
-    const vh = document.getElementById('video-hero');
-    vh.style.display = 'flex';
-    if (loader) loader.classList.add('hidden');
+  // Draw first frame as soon as it loads
+  const firstImg = new Image();
+  firstImg.onload = () => { currentFrame = firstImg; resize(); };
+  firstImg.src = `frames/frame_0001.${ext}`;
+
+  resize();
+  await promises[0]; // wait for at least first frame
+
+  // Scroll → frame index
+  function onScroll() {
+    const col       = document.getElementById('content-col');
+    if (!col) return;
+    const rect      = col.getBoundingClientRect();
+    const totalScroll = col.scrollHeight - window.innerHeight;
+    const scrolled  = Math.max(0, -rect.top);
+    const progress  = Math.min(1, scrolled / Math.max(totalScroll, 1));
+    const idx       = Math.min(frameCount - 1, Math.floor(progress * frameCount));
+    const img       = frames[idx];
+    if (img && img !== currentFrame) {
+      currentFrame = img;
+      drawFrame(img);
+    }
   }
+
+  // Preload in background then wire up scroll
+  Promise.all(promises).then(() => {
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  });
+
+  // Wire scroll early too for loaded frames
+  window.addEventListener('scroll', onScroll, { passive: true });
 })();
+
+// ══════════════════════════════════════════
+//  UI: Nav, Reveal, Parallax, Hamburger
+// ══════════════════════════════════════════
 
 // Nav scroll
 const nav = document.getElementById('nav');
@@ -1103,7 +884,7 @@ const io = new IntersectionObserver(entries => {
 revealEls.forEach(el => io.observe(el));
 
 // Parallax: signature bg text
-const sigBg  = document.getElementById('sigBg');
+const sigBg = document.getElementById('sigBg');
 const sigSec = document.getElementById('signature');
 if (sigBg && sigSec) {
   window.addEventListener('scroll', () => {
@@ -1113,8 +894,8 @@ if (sigBg && sigSec) {
   }, { passive: true });
 }
 
-// Hamburger menu
-const toggle   = document.getElementById('nav-toggle');
+// Hamburger
+const toggle = document.getElementById('nav-toggle');
 const mobileMenu = document.getElementById('mobile-menu');
 if (toggle && mobileMenu) {
   toggle.addEventListener('click', () => {
