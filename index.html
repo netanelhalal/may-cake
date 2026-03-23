@@ -946,18 +946,17 @@
   const transition = document.getElementById('anim-transition');
 
   const bgCanvas   = document.getElementById('bg-canvas');
-  const bgCtx      = bgCanvas.getContext('2d', { alpha: false });
   const canvas     = document.getElementById('anim-canvas');
-  const ctx        = canvas.getContext('2d', { alpha: false });
+  const ctx        = canvas.getContext('2d');
 
   let frames = [], totalFrames = 0, currentFrameIdx = 0, rafPending = false;
 
   function resizeCanvases() {
     const col   = document.getElementById('canvas-col');
-    const w     = col.offsetWidth;
+    const w     = col.offsetWidth || Math.round(window.innerWidth * 0.58);
     const h     = window.innerHeight;
-    canvas.width   = bgCanvas.width   = w;
-    canvas.height  = bgCanvas.height  = h;
+    canvas.width  = w;
+    canvas.height = h;
     if (frames[currentFrameIdx]?.complete) renderFrame(currentFrameIdx);
   }
   window.addEventListener('resize', resizeCanvases, { passive: true });
@@ -979,11 +978,13 @@
   function renderFrame(idx) {
     const img = frames[idx];
     if (!img?.complete || !img.naturalWidth) return;
-    // Blurred bg (cover-fit)
-    bgCtx.drawImage(img, 0, 0, bgCanvas.width, bgCanvas.height);
-    // Sharp main (contain-fit — shows full portrait)
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawContain(ctx, img);
+    const cw = canvas.width, ch = canvas.height;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    // Cover-fit: fills entire canvas, crops sides if needed
+    const scale = Math.max(cw / iw, ch / ih);
+    const dx = (cw - iw * scale) / 2;
+    const dy = (ch - ih * scale) / 2;
+    ctx.drawImage(img, dx, dy, iw * scale, ih * scale);
   }
 
   function onScroll() {
@@ -1066,6 +1067,8 @@
     if (!count || count < 2) throw new Error('too few frames');
     totalFrames = count;
 
+    // Wait for layout to be computed before sizing canvases
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
     resizeCanvases();
     window.addEventListener('scroll', onScroll, { passive: true });
 
