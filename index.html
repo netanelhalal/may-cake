@@ -1034,74 +1034,60 @@ const isMobile = () => window.innerWidth <= 900;
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // DESKTOP: GSAP ScrollTrigger text chapters
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ScrollTrigger.matchMedia({
-  '(min-width: 901px)': function() {
-    const story    = document.getElementById('scroll-story');
-    const dots     = document.querySelectorAll('#story-dots .dot');
-    const progress = document.getElementById('story-progress');
+if (!isMobile()) {
+  const story    = document.getElementById('scroll-story');
+  const dots     = document.querySelectorAll('#story-dots .dot');
+  const progress = document.getElementById('story-progress');
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: story,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1.4,
-        onUpdate: self => {
-          if (progress) progress.style.width = (self.progress * 100) + '%';
-          const chIdx = Math.min(3, Math.floor(self.progress * 4));
-          dots.forEach((d, i) => d.classList.toggle('active', i === chIdx));
-        }
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: story,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 1.4,
+      onUpdate: self => {
+        if (progress) progress.style.width = (self.progress * 100) + '%';
+        const chIdx = Math.min(3, Math.floor(self.progress * 4));
+        dots.forEach((d, i) => d.classList.toggle('active', i === chIdx));
       }
-    });
+    }
+  });
 
-    tl.fromTo('#ch-1', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 0)
-      .fromTo('#ch-1 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 0.2)
-      .to('#ch-1', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 1.2)
+  tl.fromTo('#ch-1', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 0)
+    .fromTo('#ch-1 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 0.2)
+    .to('#ch-1', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 1.2)
 
-      .fromTo('#ch-2', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 1.4)
-      .fromTo('#ch-2 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 1.6)
-      .fromTo('#ch-2 .ch-stat-num', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.5, stagger:0.1 }, 1.8)
-      .to('#ch-2', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 2.6)
+    .fromTo('#ch-2', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 1.4)
+    .fromTo('#ch-2 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 1.6)
+    .fromTo('#ch-2 .ch-stat-num', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.5, stagger:0.1 }, 1.8)
+    .to('#ch-2', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 2.6)
 
-      .fromTo('#ch-3', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 2.8)
-      .fromTo('#ch-3 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 3.0)
-      .to('#ch-3', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 4.0)
+    .fromTo('#ch-3', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 2.8)
+    .fromTo('#ch-3 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 3.0)
+    .to('#ch-3', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 4.0)
 
-      .fromTo('#ch-4', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 4.2)
-      .fromTo('#ch-4 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 4.4)
-      .fromTo('#ch-4 .btn-solid', { opacity:0, y:20, scale:0.95 }, { opacity:1, y:0, scale:1, duration:0.5 }, 4.8);
-  }
-});
+    .fromTo('#ch-4', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 4.2)
+    .fromTo('#ch-4 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 4.4)
+    .fromTo('#ch-4 .btn-solid', { opacity:0, y:20, scale:0.95 }, { opacity:1, y:0, scale:1, duration:0.5 }, 4.8);
+}
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // MOBILE: IntersectionObserver for frosted-glass cards
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-(function initMobileCards() {
-  if (!isMobile()) return;
-
+if (isMobile()) {
   const cards = document.querySelectorAll('.mob-card');
-  if (!cards.length) return;
-
-  // Stagger each card's delay slightly for a premium feel
-  const delays = [0, 0.05, 0.05, 0.05];
 
   const io = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const idx = Array.from(cards).indexOf(entry.target);
-        setTimeout(() => {
-          entry.target.classList.add('in-view');
-        }, (delays[idx] || 0) * 1000);
+        entry.target.classList.add('in-view');
         io.unobserve(entry.target);
       }
     });
-  }, {
-    threshold: 0.15,
-    rootMargin: '0px 0px -40px 0px'
-  });
+  }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
 
   cards.forEach(c => io.observe(c));
-})();
+}
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // NAV
