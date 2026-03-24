@@ -283,35 +283,6 @@
       color: rgba(232,213,163,.35);
     }
 
-    /* ── INGREDIENTS ── */
-    .ingredient {
-      position: absolute;
-      z-index: 4;
-      font-size: 3rem;
-      pointer-events: none;
-      will-change: transform, opacity;
-      filter: drop-shadow(0 4px 20px rgba(0,0,0,.5));
-      opacity: 0;
-    }
-    #ing-1 { top: 30%; right: 35%; font-size: 3.5rem; }
-    #ing-2 { top: 55%; right: 45%; font-size: 2.8rem; }
-    #ing-3 { top: 20%; right: 55%; font-size: 2.4rem; }
-    #ing-4 { top: 65%; right: 30%; font-size: 2.2rem; }
-    #ing-5 { top: 42%; right: 60%; font-size: 3rem; }
-
-    /* Gold ring burst */
-    .ring {
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid rgba(201,164,98,.5);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 3;
-      will-change: transform, opacity;
-    }
-
     /* Progress dots */
     #story-dots {
       position: absolute;
@@ -539,15 +510,21 @@
       #mobile-menu { display:flex; pointer-events:none; }
       #mobile-menu.open { pointer-events:all; }
 
-      /* Stack on mobile */
+      /* Mobile: video on top half, text on bottom half */
       #story-pin {
         grid-template-columns: 1fr;
-        grid-template-rows: 50vh 50vh;
+        grid-template-rows: 55vh 45vh;
       }
-      #story-left { padding: 4rem 1.5rem 2rem; }
+      #story-right { order: -1; height: 55vh; }
+      #story-left {
+        padding: 2rem 1.5rem 4rem;
+        justify-content: flex-start;
+        padding-top: 2.5rem;
+      }
       .chapter { padding: 0 1.5rem; }
-      .ch-title { font-size: clamp(2.8rem, 10vw, 4rem); }
-      #story-right { height: 50vh; }
+      .ch-title { font-size: clamp(2.4rem, 9vw, 3.5rem); }
+      .ch-body { font-size: .9rem; }
+      .ch-stat { gap: 1.5rem; }
 
       .about-wrap { grid-template-columns: 1fr; padding: 0 1.5rem; gap: 3rem; }
       .about-img-box { grid-column: 1; grid-row: 2; }
@@ -663,18 +640,6 @@
     <!-- RIGHT: sticky product visual -->
     <div id="story-right">
       <canvas id="anim-canvas"></canvas>
-
-      <!-- Ingredients thrown into cake -->
-      <div class="ingredient" id="ing-1">🍓</div>
-      <div class="ingredient" id="ing-2">🍫</div>
-      <div class="ingredient" id="ing-3">🌸</div>
-      <div class="ingredient" id="ing-4">✨</div>
-      <div class="ingredient" id="ing-5">🫐</div>
-
-      <!-- Gold rings burst -->
-      <div class="ring" id="ring-1" style="width:120px;height:120px;"></div>
-      <div class="ring" id="ring-2" style="width:220px;height:220px;"></div>
-      <div class="ring" id="ring-3" style="width:360px;height:360px;"></div>
 
       <div class="right-brand">MAY CAKE</div>
       <div id="story-progress"></div>
@@ -994,13 +959,6 @@ gsap.registerPlugin(ScrollTrigger);
   // Fade out ch-1
   .to('#ch-1', { opacity: 0, y: -70, duration: 0.6, ease: 'power2.in' }, 1.2)
 
-  // Ingredient 1 — strawberry flies in from bottom-left
-  .fromTo('#ing-1',
-    { opacity: 0, x: -300, y: 250, rotation: -200, scale: 0.3 },
-    { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1, duration: 1, ease: 'back.out(1.4)' }, 0.8
-  )
-  .to('#ing-1', { opacity: 0, scale: 1.5, duration: 0.4 }, 1.8)
-
   // ─── Chapter 2 (25% → 50%) ───
   .fromTo('#ch-2',
     { opacity: 0, y: 60 },
@@ -1016,15 +974,6 @@ gsap.registerPlugin(ScrollTrigger);
   )
   .to('#ch-2', { opacity: 0, y: -70, duration: 0.6, ease: 'power2.in' }, 2.6)
 
-  // Ingredient 2 — chocolate flies from top-left
-  .fromTo('#ing-2',
-    { opacity: 0, x: -350, y: -200, rotation: 360, scale: 0.2 },
-    { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1, duration: 1, ease: 'back.out(1.4)' }, 2.2
-  )
-  .to('#ing-2', { opacity: 0, scale: 1.5, duration: 0.4 }, 3.0)
-
-  // (canvas handles the right-side visuals via frame animation)
-
   // ─── Chapter 3 (50% → 75%) ───
   .fromTo('#ch-3',
     { opacity: 0, y: 60 },
@@ -1035,20 +984,6 @@ gsap.registerPlugin(ScrollTrigger);
     { scaleX: 1, duration: 0.6, ease: 'power2.out' }, 3.0
   )
   .to('#ch-3', { opacity: 0, y: -70, duration: 0.6, ease: 'power2.in' }, 4.0)
-
-  // Ingredient 3 — flower spins in
-  .fromTo('#ing-3',
-    { opacity: 0, x: -200, y: 150, rotation: -540, scale: 0.1 },
-    { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1, duration: 1.2, ease: 'back.out(1.7)' }, 3.4
-  )
-  .to('#ing-3', { opacity: 0, scale: 1.4, duration: 0.4 }, 4.2)
-
-  // Ingredient 4 — sparkles burst
-  .fromTo('#ing-4',
-    { opacity: 0, scale: 0 },
-    { opacity: 1, scale: 1.5, duration: 0.5, ease: 'back.out(2)' }, 3.8
-  )
-  .to('#ing-4', { opacity: 0, scale: 3, duration: 0.4 }, 4.3)
 
   // ─── Chapter 4 (75% → 100%) ───
   .fromTo('#ch-4',
@@ -1064,28 +999,7 @@ gsap.registerPlugin(ScrollTrigger);
     { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power2.out' }, 4.8
   )
 
-  // Blueberry + final burst
-  .fromTo('#ing-5',
-    { opacity: 0, x: -400, y: 100, rotation: -180, scale: 0.3 },
-    { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1.2, duration: 1.2, ease: 'back.out(1.7)' }, 4.4
-  )
-  .to('#ing-5', { opacity: 0, scale: 2, duration: 0.5 }, 5.4)
-
-  // Gold ring burst
-  .fromTo('#ring-1',
-    { scale: 0, opacity: 0.8 },
-    { scale: 3, opacity: 0, duration: 0.8, ease: 'power2.out' }, 4.6
-  )
-  .fromTo('#ring-2',
-    { scale: 0, opacity: 0.6 },
-    { scale: 2.5, opacity: 0, duration: 1, ease: 'power2.out' }, 4.7
-  )
-  .fromTo('#ring-3',
-    { scale: 0, opacity: 0.4 },
-    { scale: 2, opacity: 0, duration: 1.2, ease: 'power2.out' }, 4.8
-  )
-
-  // Timeline complete — canvas handles the right side visuals
+  // Canvas handles all right-side visuals via scroll-driven frame animation
 
 })();
 
