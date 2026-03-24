@@ -500,9 +500,15 @@
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       MOB-CARD (hidden on desktop)
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .mob-card { display: contents; } /* transparent on desktop — content flows normally */
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
        RESPONSIVE
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
     @media (max-width: 900px) {
+      /* ── Nav ── */
       #nav { padding:1.2rem 1.5rem; }
       #nav.scrolled { padding:.9rem 1.5rem; }
       .nav-links { display:none; }
@@ -510,42 +516,135 @@
       #mobile-menu { display:flex; pointer-events:none; }
       #mobile-menu.open { pointer-events:all; }
 
-      /* Mobile: video on top half, text on bottom half */
-      #story-pin {
-        grid-template-columns: 1fr;
-        grid-template-rows: 55vh 45vh;
+      /* ── Story: Apple-style mobile layout ── */
+      #scroll-story {
+        height: auto !important;          /* chapters drive the height   */
       }
-      #story-right { order: -1; height: 55vh; }
-      #story-left {
-        padding: 2rem 1.5rem 4rem;
-        justify-content: flex-start;
-        padding-top: 2.5rem;
-      }
-      .chapter { padding: 0 1.5rem; }
-      .ch-title { font-size: clamp(2.4rem, 9vw, 3.5rem); }
-      .ch-body { font-size: .9rem; }
-      .ch-stat { gap: 1.5rem; }
 
+      #story-pin {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        height: auto;
+      }
+
+      /* Video: sticky at top, behind text layers */
+      #story-right {
+        order: -1;
+        position: sticky !important;
+        top: 0;
+        height: 50vh !important;
+        width: 100%;
+        z-index: 1;
+        flex-shrink: 0;
+      }
+
+      /* Text column: overlaps video via negative margin */
+      #story-left {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        margin-top: -50vh;              /* pull up to start at same y as video */
+        padding: 0;
+      }
+
+      /* Each chapter: one full viewport of scroll room */
+      .chapter {
+        position: relative !important;
+        opacity: 1 !important;
+        transform: none !important;
+        min-height: 90vh;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-end !important;
+        align-items: stretch !important;
+        padding: 0 !important;
+        background: transparent !important;
+        pointer-events: none;
+      }
+      /* First chapter: push card below the video area */
+      #ch-1 { padding-top: 50vh !important; }
+
+      /* Frosted-glass card — the text block */
+      .mob-card {
+        display: block !important;         /* override "contents" from desktop */
+        pointer-events: all;
+        padding: 2.6rem 1.8rem 3.5rem;
+        background: rgba(10, 4, 8, 0.80);
+        -webkit-backdrop-filter: blur(24px) saturate(1.4);
+        backdrop-filter: blur(24px) saturate(1.4);
+        border-top: 1px solid rgba(201,164,98,0.20);
+
+        /* Entrance animation — reset with JS */
+        opacity: 0;
+        transform: translateY(36px);
+        transition:
+          opacity  0.75s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .mob-card.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Typography inside mob-card */
+      .chapter .ch-eyebrow {
+        font-size: .6rem;
+        margin-bottom: 1.2rem;
+      }
+      .chapter .ch-title {
+        font-size: clamp(2.8rem, 10vw, 4.2rem);
+        margin-bottom: 1rem;
+      }
+      .chapter .ch-body {
+        font-size: .95rem;
+        max-width: 100%;
+      }
+      .chapter .ch-divider {
+        margin-bottom: 1rem;
+      }
+      .chapter .ch-stat {
+        gap: 1.8rem;
+        margin-top: 1.5rem;
+      }
+      .chapter .ch-stat-num { font-size: 2.2rem; }
+      .chapter .btn-solid { margin-top: 2rem; width: 100%; text-align: center; }
+
+      /* Hide dots on mobile — cards replace them */
+      #story-dots { display: none; }
+
+      /* ── Rest of site (mobile) ── */
       .about-wrap { grid-template-columns: 1fr; padding: 0 1.5rem; gap: 3rem; }
       .about-img-box { grid-column: 1; grid-row: 2; }
       .about-copy    { grid-column: 1; grid-row: 1; padding-right: 0; }
       .about-img-box::before { display: none; }
       .about-img { aspect-ratio: 16/9; }
+      #about { padding: 6rem 0; }
 
       .prod-grid { grid-template-columns: 1fr 1fr; }
       .prod-header { padding: 0 1.5rem; }
+      #products { padding: 6rem 0; }
+
       .pillars { grid-template-columns: 1fr 1fr; }
-      .pillar:nth-child(n) { animation:none; }
-      .test-grid { grid-template-columns: 1fr; padding: 0 1.5rem; }
-      .foot-top { grid-template-columns: 1fr 1fr; gap: 2.5rem; padding: 0 1.5rem; }
-      .foot-wrap { padding: 0 1.5rem; }
-      .foot-bottom { flex-direction:column; gap:.8rem; text-align:center; }
+      .pillar:nth-child(n) { animation: none; }
+      #signature { padding: 7rem 0; }
       .sig-inner { padding: 0 1.5rem; }
+
+      .test-grid { grid-template-columns: 1fr; padding: 0 1.5rem; }
+      #testimonials { padding: 6rem 0; }
+
+      #cta { padding: 7rem 0; }
+
+      .foot-top { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+      .foot-wrap { padding: 0 1.5rem; }
+      .foot-bottom { flex-direction: column; gap: .8rem; text-align: center; }
     }
+
     @media (max-width: 480px) {
       .prod-grid { grid-template-columns: 1fr; }
       .foot-top { grid-template-columns: 1fr; }
-      #scroll-story { height: 400vh; }
+      .chapter .ch-title { font-size: clamp(2.4rem, 11vw, 3.2rem); }
     }
   </style>
 </head>
@@ -586,53 +685,61 @@
 
       <!-- Chapter 1 -->
       <div class="chapter" id="ch-1">
-        <div class="ch-eyebrow">001 &nbsp;/&nbsp; MAY CAKE</div>
-        <h1 class="ch-title">כל ביס<br>הוא <span class="gold">חוויה</span></h1>
-        <div class="ch-divider"></div>
-        <p class="ch-body">מאפייה יוקרתית שבה כל יצירה נולדת מתשוקה אמיתית ואהבה לאמנות קולינרית.</p>
-        <div class="scroll-hint">
-          <span>גלול למטה</span>
-          <div class="scroll-line"></div>
+        <div class="mob-card">
+          <div class="ch-eyebrow">001 &nbsp;/&nbsp; MAY CAKE</div>
+          <h1 class="ch-title">כל ביס<br>הוא <span class="gold">חוויה</span></h1>
+          <div class="ch-divider"></div>
+          <p class="ch-body">מאפייה יוקרתית שבה כל יצירה נולדת מתשוקה אמיתית ואהבה לאמנות קולינרית.</p>
+          <div class="scroll-hint">
+            <span>גלול למטה</span>
+            <div class="scroll-line"></div>
+          </div>
         </div>
       </div>
 
       <!-- Chapter 2 -->
       <div class="chapter" id="ch-2">
-        <div class="ch-eyebrow">002 &nbsp;/&nbsp; המרכיבים</div>
-        <h2 class="ch-title">רק <span class="gold">הטוב</span><br>ביותר</h2>
-        <div class="ch-divider"></div>
-        <p class="ch-body">שוקולד בלגי 72%, וניל בורבון, קרם טרי, פירות יבוא — ללא קיצורי דרך, ללא פשרות.</p>
-        <div class="ch-stat">
-          <div class="ch-stat-item">
-            <div class="ch-stat-num">100%</div>
-            <div class="ch-stat-label">טבעי</div>
-          </div>
-          <div class="ch-stat-item">
-            <div class="ch-stat-num">8+</div>
-            <div class="ch-stat-label">שכבות</div>
-          </div>
-          <div class="ch-stat-item">
-            <div class="ch-stat-num">24h</div>
-            <div class="ch-stat-label">הכנה</div>
+        <div class="mob-card">
+          <div class="ch-eyebrow">002 &nbsp;/&nbsp; המרכיבים</div>
+          <h2 class="ch-title">רק <span class="gold">הטוב</span><br>ביותר</h2>
+          <div class="ch-divider"></div>
+          <p class="ch-body">שוקולד בלגי 72%, וניל בורבון, קרם טרי, פירות יבוא — ללא קיצורי דרך, ללא פשרות.</p>
+          <div class="ch-stat">
+            <div class="ch-stat-item">
+              <div class="ch-stat-num">100%</div>
+              <div class="ch-stat-label">טבעי</div>
+            </div>
+            <div class="ch-stat-item">
+              <div class="ch-stat-num">8+</div>
+              <div class="ch-stat-label">שכבות</div>
+            </div>
+            <div class="ch-stat-item">
+              <div class="ch-stat-num">24h</div>
+              <div class="ch-stat-label">הכנה</div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Chapter 3 -->
       <div class="chapter" id="ch-3">
-        <div class="ch-eyebrow">003 &nbsp;/&nbsp; האמנות</div>
-        <h2 class="ch-title"><span class="gold">עבודת</span><br>יד אמיתית</h2>
-        <div class="ch-divider"></div>
-        <p class="ch-body">כל קישוט, כל פרח, כל שכבת גנאש — מעוצב ביד עם אינסוף סבלנות ודיוק.</p>
+        <div class="mob-card">
+          <div class="ch-eyebrow">003 &nbsp;/&nbsp; האמנות</div>
+          <h2 class="ch-title"><span class="gold">עבודת</span><br>יד אמיתית</h2>
+          <div class="ch-divider"></div>
+          <p class="ch-body">כל קישוט, כל פרח, כל שכבת גנאש — מעוצב ביד עם אינסוף סבלנות ודיוק.</p>
+        </div>
       </div>
 
       <!-- Chapter 4 -->
       <div class="chapter" id="ch-4">
-        <div class="ch-eyebrow">004 &nbsp;/&nbsp; החוויה</div>
-        <h2 class="ch-title"><span class="gold">זיכרונות</span><br>לנצח</h2>
-        <div class="ch-divider"></div>
-        <p class="ch-body">עוגה שנשארת בלב הרבה אחרי הביס האחרון. כי המתוקות האמיתיות הן ברגעים.</p>
-        <a href="#cta" class="btn-solid">להזמנה עכשיו ←</a>
+        <div class="mob-card">
+          <div class="ch-eyebrow">004 &nbsp;/&nbsp; החוויה</div>
+          <h2 class="ch-title"><span class="gold">זיכרונות</span><br>לנצח</h2>
+          <div class="ch-divider"></div>
+          <p class="ch-body">עוגה שנשארת בלב הרבה אחרי הביס האחרון. כי המתוקות האמיתיות הן ברגעים.</p>
+          <a href="#cta" class="btn-solid">להזמנה עכשיו ←</a>
+        </div>
       </div>
 
     </div><!-- /story-left -->
@@ -847,8 +954,11 @@
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
+const isMobile = () => window.innerWidth <= 900;
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// CANVAS FRAME ANIMATION (right side)
+// CANVAS FRAME ANIMATION
+// Works on both desktop and mobile — driven by scroll position
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 (function initCanvas() {
   const canvas = document.getElementById('anim-canvas');
@@ -860,14 +970,16 @@ gsap.registerPlugin(ScrollTrigger);
     canvas.width  = canvas.offsetWidth  * dpr;
     canvas.height = canvas.offsetHeight * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (lastFrame) drawCover(lastFrame);
   }
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
   function drawCover(img) {
     if (!img || !img.naturalWidth) return;
-    const cw = canvas.width  / (window.devicePixelRatio || 1);
-    const ch = canvas.height / (window.devicePixelRatio || 1);
+    const dpr = window.devicePixelRatio || 1;
+    const cw = canvas.width  / dpr;
+    const ch = canvas.height / dpr;
     const ir = img.naturalWidth / img.naturalHeight;
     const cr = cw / ch;
     let sw, sh, sx, sy;
@@ -879,38 +991,36 @@ gsap.registerPlugin(ScrollTrigger);
 
   let frameCount = 80, ext = 'webp';
   const frames = [];
-  let loadedCount = 0;
+  let lastFrame = null;
 
   function pad(n) { return String(n).padStart(4,'0'); }
 
-  // Load all frames
   function loadFrames() {
     for (let i = 0; i < frameCount; i++) {
       const img = new Image();
       const idx = i;
       img.onload = () => {
         frames[idx] = img;
-        loadedCount++;
-        if (idx === 0) { drawCover(img); } // show first frame immediately
+        if (idx === 0) { lastFrame = img; drawCover(img); }
       };
-      img.onerror = () => { loadedCount++; };
       img.src = `frames/frame_${pad(i+1)}.${ext}`;
     }
   }
 
-  // Wire scroll → frame
   function onScroll() {
     const story = document.getElementById('scroll-story');
     if (!story) return;
-    const rect = story.getBoundingClientRect();
-    const totalH = story.offsetHeight - window.innerHeight;
+    const rect    = story.getBoundingClientRect();
+    const totalH  = story.offsetHeight - window.innerHeight;
     const scrolled = Math.max(0, -rect.top);
     const progress = Math.min(1, scrolled / Math.max(totalH, 1));
     const idx = Math.min(frameCount - 1, Math.floor(progress * frameCount));
-    if (frames[idx]) drawCover(frames[idx]);
+    if (frames[idx] && frames[idx] !== lastFrame) {
+      lastFrame = frames[idx];
+      drawCover(frames[idx]);
+    }
   }
 
-  // Fetch meta then load
   fetch('frames/count.json')
     .then(r => r.json())
     .then(meta => { frameCount = meta.count || 80; ext = meta.ext || 'webp'; })
@@ -922,85 +1032,75 @@ gsap.registerPlugin(ScrollTrigger);
 })();
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SCROLL STORY ANIMATION (left side text + ingredients)
+// DESKTOP: GSAP ScrollTrigger text chapters
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-(function initStory() {
-  const story    = document.getElementById('scroll-story');
-  const dots     = document.querySelectorAll('#story-dots .dot');
-  const progress = document.getElementById('story-progress');
+ScrollTrigger.matchMedia({
+  '(min-width: 901px)': function() {
+    const story    = document.getElementById('scroll-story');
+    const dots     = document.querySelectorAll('#story-dots .dot');
+    const progress = document.getElementById('story-progress');
 
-  // Chapter timing within the 500vh → each chapter occupies ~25%
-  // We map scroll progress [0,1] via a single timeline
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: story,
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: 1.4,
-      onUpdate: self => {
-        // Progress bar
-        if (progress) progress.style.width = (self.progress * 100) + '%';
-        // Update dots
-        const chIdx = Math.min(3, Math.floor(self.progress * 4));
-        dots.forEach((d, i) => d.classList.toggle('active', i === chIdx));
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: story,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1.4,
+        onUpdate: self => {
+          if (progress) progress.style.width = (self.progress * 100) + '%';
+          const chIdx = Math.min(3, Math.floor(self.progress * 4));
+          dots.forEach((d, i) => d.classList.toggle('active', i === chIdx));
+        }
       }
-    }
+    });
+
+    tl.fromTo('#ch-1', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 0)
+      .fromTo('#ch-1 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 0.2)
+      .to('#ch-1', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 1.2)
+
+      .fromTo('#ch-2', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 1.4)
+      .fromTo('#ch-2 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 1.6)
+      .fromTo('#ch-2 .ch-stat-num', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.5, stagger:0.1 }, 1.8)
+      .to('#ch-2', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 2.6)
+
+      .fromTo('#ch-3', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 2.8)
+      .fromTo('#ch-3 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 3.0)
+      .to('#ch-3', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 4.0)
+
+      .fromTo('#ch-4', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 4.2)
+      .fromTo('#ch-4 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 4.4)
+      .fromTo('#ch-4 .btn-solid', { opacity:0, y:20, scale:0.95 }, { opacity:1, y:0, scale:1, duration:0.5 }, 4.8);
+  }
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MOBILE: IntersectionObserver for frosted-glass cards
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(function initMobileCards() {
+  if (!isMobile()) return;
+
+  const cards = document.querySelectorAll('.mob-card');
+  if (!cards.length) return;
+
+  // Stagger each card's delay slightly for a premium feel
+  const delays = [0, 0.05, 0.05, 0.05];
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(cards).indexOf(entry.target);
+        setTimeout(() => {
+          entry.target.classList.add('in-view');
+        }, (delays[idx] || 0) * 1000);
+        io.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -40px 0px'
   });
 
-  // ─── Chapter 1 (0% → 25%) ───
-  tl.fromTo('#ch-1',
-    { opacity: 0, y: 60 },
-    { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0
-  )
-  .fromTo('#ch-1 .ch-divider',
-    { scaleX: 0 },
-    { scaleX: 1, duration: 0.6, ease: 'power2.out' }, 0.2
-  )
-  // Fade out ch-1
-  .to('#ch-1', { opacity: 0, y: -70, duration: 0.6, ease: 'power2.in' }, 1.2)
-
-  // ─── Chapter 2 (25% → 50%) ───
-  .fromTo('#ch-2',
-    { opacity: 0, y: 60 },
-    { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 1.4
-  )
-  .fromTo('#ch-2 .ch-divider',
-    { scaleX: 0 },
-    { scaleX: 1, duration: 0.6, ease: 'power2.out' }, 1.6
-  )
-  .fromTo('#ch-2 .ch-stat .ch-stat-num',
-    { opacity: 0, y: 20 },
-    { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 }, 1.8
-  )
-  .to('#ch-2', { opacity: 0, y: -70, duration: 0.6, ease: 'power2.in' }, 2.6)
-
-  // ─── Chapter 3 (50% → 75%) ───
-  .fromTo('#ch-3',
-    { opacity: 0, y: 60 },
-    { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 2.8
-  )
-  .fromTo('#ch-3 .ch-divider',
-    { scaleX: 0 },
-    { scaleX: 1, duration: 0.6, ease: 'power2.out' }, 3.0
-  )
-  .to('#ch-3', { opacity: 0, y: -70, duration: 0.6, ease: 'power2.in' }, 4.0)
-
-  // ─── Chapter 4 (75% → 100%) ───
-  .fromTo('#ch-4',
-    { opacity: 0, y: 60 },
-    { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 4.2
-  )
-  .fromTo('#ch-4 .ch-divider',
-    { scaleX: 0 },
-    { scaleX: 1, duration: 0.6, ease: 'power2.out' }, 4.4
-  )
-  .fromTo('#ch-4 .btn-solid',
-    { opacity: 0, y: 20, scale: 0.95 },
-    { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power2.out' }, 4.8
-  )
-
-  // Canvas handles all right-side visuals via scroll-driven frame animation
-
+  cards.forEach(c => io.observe(c));
 })();
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
