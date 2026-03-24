@@ -500,9 +500,11 @@
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-       MOB-CARD (hidden on desktop)
+       MOB-CARD: frosted-glass wrapper
+       On desktop = transparent passthrough
+       On mobile  = styled card
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    .mob-card { display: contents; } /* transparent on desktop — content flows normally */
+    .mob-card { display: contents; }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
        RESPONSIVE
@@ -516,105 +518,63 @@
       #mobile-menu { display:flex; pointer-events:none; }
       #mobile-menu.open { pointer-events:all; }
 
-      /* ── Story: Apple-style mobile layout ── */
-      #scroll-story {
-        height: auto !important;          /* chapters drive the height   */
-      }
-
+      /* ── Story: keep 500vh + sticky pin, split into rows ── */
       #story-pin {
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        height: auto;
+        grid-template-columns: 1fr;
+        grid-template-rows: 50vh 50vh;
       }
 
-      /* Video: sticky at top, behind text layers */
+      /* Video: top row */
       #story-right {
         order: -1;
-        position: sticky !important;
-        top: 0;
-        height: 50vh !important;
-        width: 100%;
-        z-index: 1;
-        flex-shrink: 0;
+        height: 50vh;
+        grid-row: 1;
       }
 
-      /* Text column: overlaps video via negative margin */
+      /* Text: bottom row */
       #story-left {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        margin-top: -50vh;              /* pull up to start at same y as video */
+        height: 50vh;
+        overflow: hidden;
         padding: 0;
+        display: block;
+        position: relative;
       }
 
-      /* Each chapter: one full viewport of scroll room */
+      /* Chapters: stacked, GSAP animates opacity/y as usual */
       .chapter {
-        position: relative !important;
-        opacity: 1 !important;
-        transform: none !important;
-        min-height: 90vh;
+        position: absolute !important;
+        inset: 0 !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: flex-end !important;
-        align-items: stretch !important;
         padding: 0 !important;
-        background: transparent !important;
-        pointer-events: none;
+        width: 100% !important;
       }
-      /* First chapter: push card below the video area */
-      #ch-1 { padding-top: 50vh !important; }
 
-      /* Frosted-glass card — the text block */
+      /* Frosted-glass card at bottom of each chapter */
       .mob-card {
-        display: block !important;         /* override "contents" from desktop */
-        pointer-events: all;
-        padding: 2.6rem 1.8rem 3.5rem;
-        background: rgba(10, 4, 8, 0.80);
-        -webkit-backdrop-filter: blur(24px) saturate(1.4);
-        backdrop-filter: blur(24px) saturate(1.4);
-        border-top: 1px solid rgba(201,164,98,0.20);
-
-        /* Entrance animation — reset with JS */
-        opacity: 0;
-        transform: translateY(36px);
-        transition:
-          opacity  0.75s cubic-bezier(0.16, 1, 0.3, 1),
-          transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      .mob-card.in-view {
-        opacity: 1;
-        transform: translateY(0);
+        display: block !important;
+        padding: 2rem 1.6rem 2.5rem;
+        background: rgba(10,4,8,0.82);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(201,164,98,0.18);
       }
 
-      /* Typography inside mob-card */
-      .chapter .ch-eyebrow {
-        font-size: .6rem;
-        margin-bottom: 1.2rem;
-      }
-      .chapter .ch-title {
-        font-size: clamp(2.8rem, 10vw, 4.2rem);
-        margin-bottom: 1rem;
-      }
-      .chapter .ch-body {
-        font-size: .95rem;
-        max-width: 100%;
-      }
-      .chapter .ch-divider {
-        margin-bottom: 1rem;
-      }
-      .chapter .ch-stat {
-        gap: 1.8rem;
-        margin-top: 1.5rem;
-      }
-      .chapter .ch-stat-num { font-size: 2.2rem; }
-      .chapter .btn-solid { margin-top: 2rem; width: 100%; text-align: center; }
+      /* Typography tweaks inside card */
+      .chapter .ch-eyebrow { font-size: .58rem; margin-bottom: .9rem; }
+      .chapter .ch-title   { font-size: clamp(2rem, 8vw, 3rem); line-height: 1; margin-bottom: .8rem; }
+      .chapter .ch-body    { font-size: .88rem; line-height: 1.7; max-width: 100%; }
+      .chapter .ch-divider { margin-bottom: .8rem; }
+      .chapter .ch-stat    { gap: 1.5rem; margin-top: 1.2rem; }
+      .chapter .ch-stat-num  { font-size: 1.9rem; }
+      .chapter .scroll-hint  { margin-top: 1rem; }
+      .chapter .btn-solid  { margin-top: 1.5rem; width: 100%; text-align: center; display: block; }
 
-      /* Hide dots on mobile — cards replace them */
-      #story-dots { display: none; }
+      /* Dots: move to bottom of video area */
+      #story-dots { bottom: 52vh; }
 
-      /* ── Rest of site (mobile) ── */
+      /* ── Rest of site ── */
       .about-wrap { grid-template-columns: 1fr; padding: 0 1.5rem; gap: 3rem; }
       .about-img-box { grid-column: 1; grid-row: 2; }
       .about-copy    { grid-column: 1; grid-row: 1; padding-right: 0; }
@@ -624,27 +584,21 @@
 
       .prod-grid { grid-template-columns: 1fr 1fr; }
       .prod-header { padding: 0 1.5rem; }
-      #products { padding: 6rem 0; }
 
       .pillars { grid-template-columns: 1fr 1fr; }
       .pillar:nth-child(n) { animation: none; }
-      #signature { padding: 7rem 0; }
       .sig-inner { padding: 0 1.5rem; }
 
       .test-grid { grid-template-columns: 1fr; padding: 0 1.5rem; }
-      #testimonials { padding: 6rem 0; }
 
-      #cta { padding: 7rem 0; }
-
-      .foot-top { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+      .foot-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
       .foot-wrap { padding: 0 1.5rem; }
       .foot-bottom { flex-direction: column; gap: .8rem; text-align: center; }
     }
 
     @media (max-width: 480px) {
       .prod-grid { grid-template-columns: 1fr; }
-      .foot-top { grid-template-columns: 1fr; }
-      .chapter .ch-title { font-size: clamp(2.4rem, 11vw, 3.2rem); }
+      .foot-top  { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -954,8 +908,6 @@
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
-const isMobile = () => window.innerWidth <= 900;
-
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CANVAS FRAME ANIMATION
 // Works on both desktop and mobile — driven by scroll position
@@ -1032,9 +984,9 @@ const isMobile = () => window.innerWidth <= 900;
 })();
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// DESKTOP: GSAP ScrollTrigger text chapters
+// GSAP: text chapters (desktop + mobile)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-if (!isMobile()) {
+(function initStory() {
   const story    = document.getElementById('scroll-story');
   const dots     = document.querySelectorAll('#story-dots .dot');
   const progress = document.getElementById('story-progress');
@@ -1053,41 +1005,23 @@ if (!isMobile()) {
     }
   });
 
-  tl.fromTo('#ch-1', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 0)
+  tl.fromTo('#ch-1', { opacity:0, y:40 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 0)
     .fromTo('#ch-1 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 0.2)
-    .to('#ch-1', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 1.2)
+    .to('#ch-1', { opacity:0, y:-40, duration:0.6, ease:'power2.in' }, 1.2)
 
-    .fromTo('#ch-2', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 1.4)
+    .fromTo('#ch-2', { opacity:0, y:40 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 1.4)
     .fromTo('#ch-2 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 1.6)
-    .fromTo('#ch-2 .ch-stat-num', { opacity:0, y:20 }, { opacity:1, y:0, duration:0.5, stagger:0.1 }, 1.8)
-    .to('#ch-2', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 2.6)
+    .fromTo('#ch-2 .ch-stat-num', { opacity:0, y:16 }, { opacity:1, y:0, duration:0.5, stagger:0.1 }, 1.8)
+    .to('#ch-2', { opacity:0, y:-40, duration:0.6, ease:'power2.in' }, 2.6)
 
-    .fromTo('#ch-3', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 2.8)
+    .fromTo('#ch-3', { opacity:0, y:40 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 2.8)
     .fromTo('#ch-3 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 3.0)
-    .to('#ch-3', { opacity:0, y:-70, duration:0.6, ease:'power2.in' }, 4.0)
+    .to('#ch-3', { opacity:0, y:-40, duration:0.6, ease:'power2.in' }, 4.0)
 
-    .fromTo('#ch-4', { opacity:0, y:60 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 4.2)
+    .fromTo('#ch-4', { opacity:0, y:40 }, { opacity:1, y:0, duration:0.8, ease:'power2.out' }, 4.2)
     .fromTo('#ch-4 .ch-divider', { scaleX:0 }, { scaleX:1, duration:0.6 }, 4.4)
-    .fromTo('#ch-4 .btn-solid', { opacity:0, y:20, scale:0.95 }, { opacity:1, y:0, scale:1, duration:0.5 }, 4.8);
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// MOBILE: IntersectionObserver for frosted-glass cards
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-if (isMobile()) {
-  const cards = document.querySelectorAll('.mob-card');
-
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
-
-  cards.forEach(c => io.observe(c));
-}
+    .fromTo('#ch-4 .btn-solid', { opacity:0, y:16, scale:0.95 }, { opacity:1, y:0, scale:1, duration:0.5 }, 4.8);
+})();
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // NAV
